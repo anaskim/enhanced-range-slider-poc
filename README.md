@@ -1,169 +1,81 @@
-# Range Group Web Component
+# Native `<rangegroup>` Chromium prototype demo
 
-## ⚠️ Disclaimer: Proof-of-Concept
+This Astro site adapts Brecht De Ruyte's enhanced range slider proof of concept
+to Chromium's experimental native `<rangegroup>` implementation. It is a
+standards-design prototype, not a production-ready component or polyfill.
 
-This component is a **proof-of-concept** and a technical demonstration. It is built to explore the ideas proposed in the **[Open UI Community Group's Enhanced Range Input Explainer](https://open-ui.org/components/enhanced-range-input.explainer/)**.
+The page keeps the original examples and labels each one according to what the
+current browser implementation provides:
 
-**It is NOT production-ready and should not be used in production applications.** The API is subject to change, and it has not been tested for robustness, cross-browser compatibility, or performance at scale. Its primary purpose is for experimentation and discussion around the future of web standards.
+- **Native**: the behavior is implemented by `<rangegroup>` and its descendant
+  `<input type="range">` controls.
+- **Native + gap**: the core control works, but a proposed styling or interaction
+  surface is not implemented.
+- **Author output**: JavaScript or CSS presents the native values outside the
+  control.
+- **Design question**: the example depends on an unresolved proposal area.
 
----
+## Requirements
 
-A highly customizable, multi-handle range slider web component built with [Lit](https://lit.dev/). This component is inspired by the WICG `<rangegroup>` proposal and provides a flexible foundation for creating complex range selection UIs.
+- Node.js 22
+- pnpm
+- A Chromium build containing the `RangeGroup` and `SliderPseudoElements`
+  runtime features
 
-The demo site is built with [Astro](https://astro.build/) and published as static files to GitHub Pages.
+The public GitHub Pages build cannot enable local Blink runtime flags. In a
+normal browser, the page therefore shows an explicit fallback state and keeps
+the real descendant range inputs visible and usable.
 
-## Features
+## Local development
 
-- **Multiple Handles**: Use any number of handles on a single track.
-- **Datalist Integration**: Automatically displays tick marks and labels from a `<datalist>` element.
-- **`stepbetween`**: Enforces a minimum distance between adjacent handles.
-- **`interaction` (working name):** `"endpoints"` (default, nearest thumb) or `"range"` (drag the fill to translate two thumbs). Name and keywords need Open UI bikeshed ([#1460](https://github.com/openui/open-ui/issues/1460)); not a committed HTML attribute.
-- **Easy Styling**: Uses CSS Shadow Parts (`::part`) for extensive styling of the track, segments, and thumbs.
-- **Rich JavaScript API**: Programmatically get and set values.
-- **Accessibility**: Implements ARIA roles and attributes for keyboard and screen reader support.
-- **Touch Friendly**: Optimized for a smooth experience on mobile devices.
-
-## Demo
-
-The demo lives in `src/pages/index.astro` and showcases various configurations.
-
----
-
-## Local Development
-
-To run the demo page locally and start developing, follow these steps:
-
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd <repository-directory>
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    pnpm install
-    ```
-
-3.  **Start the development server:**
-    ```bash
-    pnpm dev
-    ```
-    This will open a local server, typically at `http://localhost:4321`.
-
-4.  **Build for production:**
-    ```bash
-    pnpm build
-    ```
-    This command builds the static demo site into the `/dist` folder, ready for GitHub Pages deployment.
-
----
-
-## Usage
-
-Once published to NPM, you can use it in your project like any other package.
-
-```bash
-npm install range-group-component
+```powershell
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-```html
-<script type="module" src="/node_modules/range-group-component/dist/range-group.js"></script>
+Astro normally serves the page at `http://localhost:4321/enhanced-range-slider-poc/`.
 
-<range-group min="0" max="1000">
-    <input type="range" value="250">
-    <input type="range" value="750">
-</range-group>
+Launch the prototype Chromium build with:
+
+```powershell
+Q:\cr\src\out\release_x64\chrome.exe `
+  --enable-blink-features=RangeGroup,SliderPseudoElements `
+  http://localhost:4321/enhanced-range-slider-poc/
 ```
 
----
+Build and check the static site with:
 
-## API Reference
-
-### Attributes / Properties
-
-| Attribute     | Property      | Type     | Default | Description                                             |
-|---------------|---------------|----------|---------|---------------------------------------------------------|
-| `min`         | `min`         | `Number` | `0`     | The minimum allowed value for the range.                |
-| `max`         | `max`         | `Number` | `100`   | The maximum allowed value for the range.                |
-| `stepbetween` | `stepBetween` | `Number` | `0`     | The minimum gap required between any two adjacent thumbs. |
-| `interaction` | `interaction` | `String` | `endpoints` | **Working name (bikeshed [#1460](https://github.com/openui/open-ui/issues/1460)).** `endpoints`: click/tap the track moves the nearest thumb. `range`: dragging anywhere between two enabled thumbs translates that pair and preserves the segment width, for any thumb count; pressing outside every segment still moves the nearest thumb. Not a committed HTML attribute. Do not use `draggable`. |
-| `list`        | `list`        | `String` | `''`    | The `id` of a `<datalist>` to associate with the range.   |
-
-
-### Public Properties (Read-only)
-
-| Property | Type                 | Description                                    |
-|----------|----------------------|------------------------------------------------|
-| `values` | `number[]`           | Returns an array of the current numeric values.  |
-| `inputs` | `HTMLInputElement[]` | Returns an array of the slotted `<input>` elements. |
-
-### Public Methods
-
-- **`getRangeInput(index: number): HTMLInputElement | undefined`**
-  - Returns the slotted `<input type="range">` element at the specified index.
-
-- **`setRangeValue(index: number, value: number)`**
-  - Programmatically sets the value of the handle at the specified index.
-
-- **`addThumb(value?: number, options?: { min?: number; max?: number; name?: string; label?: string }): HTMLInputElement`**
-  - Adds a new handle (a real `<input type="range">`) at the given value and returns it. Because handles are backed by slotted inputs, this is a convenience over creating and appending an input yourself.
-
-- **`removeThumb(index: number)`**
-  - Removes the handle (and its backing `<input>`) at the specified index.
-
-### Events
-
-- **`change`**
-  - Fires when any of the handle values change. The new values can be accessed from the `event.detail.values` property.
-
-### Styling with CSS Parts
-
-You can style the component from outside its shadow DOM using the `::part()` pseudo-element.
-
-| Part Name         | Description                                        |
-|-------------------|----------------------------------------------------|
-| `track`           | The main track element.                            |
-| `segment`         | Styles all segments between and outside thumbs.    |
-| `segment-{n}`     | Styles an individual segment (e.g., `segment-1`).  |
-| `thumb`           | Styles all thumb (handle) elements.                |
-| `thumb-{n}`       | Styles an individual thumb (e.g., `thumb-1`).      |
-| `ticks`           | The container for all tick marks.                  |
-| `tick`            | Styles all tick marks.                             |
-| `tick-{n}`        | Styles an individual tick mark (e.g., `tick-1`).   |
-| `tick-labels`     | The container for all tick mark labels.            |
-| `tick-label`      | Styles all tick mark labels.                       |
-| `tick-label-{n}`  | Styles an individual tick label (e.g., `tick-label-1`). |
-
-**Example:**
-```css
-range-group::part(track) {
-  background-color: #e5e7eb;
-}
-
-/* Style the third tick mark */
-range-group::part(tick-3) {
-  background-color: dodgerblue;
-  height: 12px;
-}
-
-range-group::part(thumb) {
-  border: 2px solid white;
-}
-
-range-group::part(segment-2) {
-  background-color: steelblue;
-}
+```powershell
+pnpm exec prettier --check .
+pnpm exec astro check
+pnpm build
 ```
 
-### Custom track shapes (no component changes)
+## Current prototype boundaries
 
-Each thumb exposes its position along the track as an inline `--thumb-left` custom property (the proposed standardized name is `--slider-thumb-position`), and each segment exposes `--segment-left` / `--segment-width`. Opt-in CSS can use these with `offset-path` to lay thumbs out along any path — a wave, an arc, or a full circle — without touching the component. The `wavy-track` and `circular-track` examples demonstrate this.
+The Chromium prototype supports real descendant range inputs, shared
+constraints, disabledness, datalist ticks and pointer snapping, form behavior,
+the JavaScript API, `::slider-track`, `::slider-segment`, `::slider-thumb`,
+indexed `::slider-segment(n)` and `::slider-thumb(n)`, and wildcard
+`::slider-thumb(*)` pseudo-elements.
 
-```css
-range-group::part(slider-thumb) {
-  offset-path: path("M0,40 Q40,15 80,40 T160,40 T240,40 T320,40");
-  offset-distance: var(--thumb-left);
-}
-```
+The following proposal areas remain unresolved or unimplemented:
 
----
+- public tick and tick-label styling;
+- public whole-interval dragging and equivalent keyboard or assistive
+  technology behavior;
+- custom path hit testing and inverse pointer mapping;
+- datalist keyboard snapping;
+- mutation-time automatic constraint repair;
+- multiple simultaneous touches;
+- maximum or per-pair gaps, nonlinear scales, and vertical orientation.
+
+See the [Open UI enhanced range input explainer](https://open-ui.org/components/enhanced-range-input.explainer/)
+for the proposal context.
+
+## Attribution
+
+The layout, visual language, and original example set come from
+[brechtDR/enhanced-range-slider-poc](https://github.com/brechtDR/enhanced-range-slider-poc).
+This fork replaces the Lit custom element with the experimental native browser
+implementation and documents the remaining implementation and design gaps.

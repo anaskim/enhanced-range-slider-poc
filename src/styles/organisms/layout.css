@@ -109,17 +109,6 @@ html.dark .sidebar a.is-active:hover {
     user-select: none;
 }
 
-.sidebar a .new-pill {
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: var(--accent);
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 999px;
-    font-weight: 700;
-}
-
 .main {
     min-width: 0;
     padding: 40px 0;

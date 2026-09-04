@@ -174,11 +174,16 @@
 
 .mobile-menu-controls {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: 0.6rem;
     margin-top: 0.85rem;
     padding-top: 0.8rem;
     border-top: 1px solid var(--border);
+}
+
+.mobile-menu-controls .runtime-status {
+    align-self: flex-start;
 }
 
 .theme-toggle {

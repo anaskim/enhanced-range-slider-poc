@@ -12,28 +12,74 @@
     color: var(--text-soft);
 }
 
-.example > h2 {
-    margin: 0;
-    font-size: 1.85rem;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: var(--text-strong);
-    font-weight: 700;
+.example-heading {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
 }
 
-.example > h2 .new-pill {
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: var(--accent);
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 999px;
+.example-heading > h2 {
+    margin: 0;
+    font-size: 1.85rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text-strong);
     font-weight: 700;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.65rem;
+    padding: 3px 9px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.status-partial {
+    border-color: color-mix(in srgb, #d18b20 45%, var(--border));
+    background: color-mix(in srgb, #f5b942 14%, var(--surface));
+    color: var(--text-strong);
+}
+
+.status-gap {
+    border-color: color-mix(in srgb, #bd4b4b 45%, var(--border));
+    background: color-mix(in srgb, #d85e54 12%, var(--surface));
+    color: var(--text-strong);
+}
+
+.prototype-disclosure {
+    max-width: 72ch;
+    padding: 0.8rem 1rem;
+    border: 1px solid color-mix(in srgb, #d18b20 40%, var(--border));
+    border-radius: 8px;
+    background: color-mix(in srgb, #f5b942 10%, var(--surface-soft));
+    color: var(--text-muted);
+    line-height: 1.55;
+}
+
+.prototype-disclosure > :first-child {
+    margin-top: 0;
+}
+
+.prototype-disclosure > :last-child {
+    margin-bottom: 0;
+}
+
+@media (forced-colors: active) {
+    .status-badge,
+    .prototype-disclosure {
+        border-color: CanvasText;
+        background: Canvas;
+        color: CanvasText;
+    }
 }
 
 .description {
@@ -49,5 +95,4 @@
     padding: 1.75rem;
     border-radius: 14px;
     border: 1px solid var(--border);
-    box-shadow: none;
 }

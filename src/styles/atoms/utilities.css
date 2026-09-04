@@ -18,18 +18,6 @@
     white-space: nowrap;
 }
 
-/* Icon-mask utility: paints an SVG mask in currentColor so the same glyph
-   can adopt any text colour. Consumer sets --icon-url + width/height. */
-.icon-mask {
-    display: inline-block;
-    width: var(--icon-size, 1em);
-    height: var(--icon-size, 1em);
-    background-color: currentColor;
-    -webkit-mask: var(--icon-url) center / contain no-repeat;
-    mask: var(--icon-url) center / contain no-repeat;
-    flex-shrink: 0;
-}
-
 /* ============================
    Accessibility helpers
    ============================ */
@@ -43,20 +31,4 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
-}
-
-/* ============================
-   Color name utilities (still used in legends)
-   ============================ */
-.color-purple { color: var(--color-purple); }
-.color-pink { color: var(--color-pink); }
-.color-teal { color: var(--color-teal); }
-.color-indigo { color: var(--color-indigo); }
-.color-orange { color: var(--color-orange); }
-.color-yellow { color: var(--color-yellow); }
-
-/* The slotted legend acts as the inline section legend within the component.
-   On the new docs page it's redundant with the section h2 — hide it. */
-range-group legend[slot="legend"] {
-    display: none;
 }

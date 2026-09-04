@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="budget-segment" eyebrow="Three-plus thumb patterns" title="Budget allocator (segment drag)">
+<ExampleSection
+    id="budget-segment"
+    eyebrow="Three-plus thumb patterns"
+    title="Budget allocator (segment drag)"
+    status="gap"
+>
     <Fragment slot="description">
         The same three-thumb split with <code>interaction="range"</code>. Dragging one of the two interior bars shifts
         its share left or right without resizing it: the two thumbs bounding that bar move together, the categories on
@@ -12,17 +17,23 @@ import CodeSnippet from "../../CodeSnippet.astro";
         a single thumb, so they are not draggable themselves; pressing there moves the closest interior bar to the
         pointer.
     </Fragment>
+    <Fragment slot="disclosure">
+        Moving one category necessarily reallocates the shares on either side. A public design still needs an explicit
+        way to choose movable segments and equivalent keyboard and accessibility operations.
+    </Fragment>
     <div slot="demo" style="position: relative">
         <style is:global>
             #budget-segment-range {
                 --track-height: 50px;
                 --thumb-size: 36px;
             }
-            #budget-segment-range::part(slider-track) {
+            #budget-segment-range::slider-track {
                 border-radius: 25px;
-                overflow: hidden;
             }
-            #budget-segment-range::part(slider-thumb) {
+            #budget-segment-range::slider-segment {
+                border-radius: 0;
+            }
+            #budget-segment-range::slider-thumb(*) {
                 border: 4px solid #ffffff;
                 background-color: white;
                 background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='none' stroke='%230b1220' stroke-linecap='round' stroke-linejoin='bevel' stroke-width='1.5' d='M15.3 16.78l4.11-4.11a1 1 0 000-1.41l-4-4M8.7 7.22L4.59 11.33a1 1 0 000 1.41l4 4'/%3E%3C/svg%3E");
@@ -34,53 +45,52 @@ import CodeSnippet from "../../CodeSnippet.astro";
                     0 2px 4px -1px rgba(0, 0, 0, 0.1);
             }
 
-            #budget-segment-range::part(slider-segment) {
-                anchor-name: var(--anchor-name);
-            }
-            #budget-segment-range::part(slider-segment-1) {
+            #budget-segment-range::slider-segment(1) {
+                border-radius: 25px 0 0 25px;
                 background-color: #e53935;
-                --anchor-name: --budget-drag-segment-1;
             }
-            #budget-segment-range::part(slider-segment-2) {
+            #budget-segment-range::slider-segment(2) {
                 background-color: #8e24aa;
-                --anchor-name: --budget-drag-segment-2;
+                cursor: grab;
             }
-            #budget-segment-range::part(slider-segment-3) {
+            #budget-segment-range::slider-segment(3) {
                 background-color: #f57c00;
-                --anchor-name: --budget-drag-segment-3;
+                cursor: grab;
             }
-            #budget-segment-range::part(slider-segment-4) {
+            #budget-segment-range::slider-segment(4) {
+                border-radius: 0 25px 25px 0;
                 background-color: #3949ab;
-                --anchor-name: --budget-drag-segment-4;
             }
 
+            .budget-segment-labels {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+            }
             .budget-segment-label {
-                position: fixed;
+                position: absolute;
+                top: 0;
+                left: var(--budget-segment-label-center);
+                translate: -50% 25%;
                 color: white;
-                position-anchor: var(--anchor);
-                top: anchor(var(--anchor) top);
-                left: anchor(var(--anchor) center);
-                /* `left` puts the box's edge on the segment centre; pull it back half its own
-                   width so the text straddles the centre instead. */
-                transform: translateX(-50%);
-                translate: 0 25%;
                 text-align: center;
                 font-size: 0.875rem;
                 text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
                 line-height: 1.2;
                 pointer-events: none;
+                z-index: 1;
             }
             #budget-segment-label-0 {
-                --anchor: --budget-drag-segment-1;
+                --budget-segment-label-center: 12.5%;
             }
             #budget-segment-label-1 {
-                --anchor: --budget-drag-segment-2;
+                --budget-segment-label-center: 37.5%;
             }
             #budget-segment-label-2 {
-                --anchor: --budget-drag-segment-3;
+                --budget-segment-label-center: 62.5%;
             }
             #budget-segment-label-3 {
-                --anchor: --budget-drag-segment-4;
+                --budget-segment-label-center: 87.5%;
             }
 
             .budget-segment-label strong {
@@ -93,13 +103,19 @@ import CodeSnippet from "../../CodeSnippet.astro";
                     --track-height: 44px;
                     --thumb-size: 32px;
                 }
-                #budget-segment-range::part(slider-track) {
+                #budget-segment-range::slider-track {
                     border-radius: 22px;
+                }
+                #budget-segment-range::slider-segment(1) {
+                    border-radius: 22px 0 0 22px;
+                }
+                #budget-segment-range::slider-segment(4) {
+                    border-radius: 0 22px 22px 0;
                 }
                 .budget-segment-label {
                     font-size: 0.76rem;
                     line-height: 1.1;
-                    translate: 0 30%;
+                    translate: -50% 30%;
                 }
                 .budget-segment-label strong {
                     font-size: 0.86rem;
@@ -110,7 +126,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 .budget-segment-label {
                     font-size: 0.66rem;
                     line-height: 1;
-                    translate: 0 36%;
+                    translate: -50% 36%;
                 }
                 .budget-segment-label strong {
                     display: none;
@@ -118,8 +134,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
             }
         </style>
         <div class="budget-range-wrapper">
-            <range-group id="budget-segment-range" min="0" max="100" interaction="range">
-                <legend slot="legend" class="visually-hidden">Budget allocator with draggable shares</legend>
+            <rangegroup id="budget-segment-range" min="0" max="100">
+                <legend class="visually-hidden">Budget allocator endpoints</legend>
                 <label class="visually-hidden">
                     Groceries/Rent separator
                     <input type="range" value="25" />
@@ -132,8 +148,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
                     Transport/Internet separator
                     <input type="range" value="75" />
                 </label>
-            </range-group>
-            <div id="budget-segment-labels" class="budget-labels">
+            </rangegroup>
+            <div id="budget-segment-labels" class="budget-segment-labels">
                 <div id="budget-segment-label-0" class="budget-segment-label"></div>
                 <div id="budget-segment-label-1" class="budget-segment-label"></div>
                 <div id="budget-segment-label-2" class="budget-segment-label"></div>
@@ -146,34 +162,127 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<!-- interaction is a working name: https://github.com/openui/open-ui/issues/1460 -->
-<rangegroup id="budget-range" min="0" max="100" interaction="range">
-  <legend>Budget allocator with draggable shares</legend>
+<rangegroup id="budget-segment-range" min="0" max="100">
+  <legend>Budget allocator endpoints</legend>
   <label>Groceries / Rent     <input type="range" value="25"></label>
   <label>Rent / Transport     <input type="range" value="50"></label>
   <label>Transport / Internet <input type="range" value="75"></label>
 </rangegroup>
+
+<div class="budget-segment-labels">
+  <div class="budget-segment-label" id="budget-segment-label-0"></div>
+  <div class="budget-segment-label" id="budget-segment-label-1"></div>
+  <div class="budget-segment-label" id="budget-segment-label-2"></div>
+  <div class="budget-segment-label" id="budget-segment-label-3"></div>
+</div>
 `}
         />
         <CodeSnippet
             lang="css"
             code={`
-/* the two interior bars are the draggable ones: each is bounded by two thumbs */
-rangegroup::slider-segment(2) { background-color: #8e24aa; }
-rangegroup::slider-segment(3) { background-color: #f57c00; }
+rangegroup {
+  --track-height: 50px;
+  --thumb-size: 36px;
+}
+rangegroup::slider-track {
+  block-size: 50px;
+  border-radius: 25px;
+}
+rangegroup::slider-segment { border-radius: 0; }
+rangegroup::slider-segment(1) {
+  border-radius: 25px 0 0 25px;
+  background-color: #e53935;
+}
+rangegroup::slider-segment(2) {
+  background-color: #8e24aa;
+  cursor: grab;
+}
+rangegroup::slider-segment(3) {
+  background-color: #f57c00;
+  cursor: grab;
+}
+rangegroup::slider-segment(4) {
+  border-radius: 0 25px 25px 0;
+  background-color: #3949ab;
+}
+rangegroup::slider-thumb(*) {
+  inline-size: 36px;
+  block-size: 36px;
+  border: 4px solid white;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='none' stroke='%230b1220' stroke-linecap='round' stroke-linejoin='bevel' stroke-width='1.5' d='M15.3 16.78l4.11-4.11a1 1 0 000-1.41l-4-4M8.7 7.22L4.59 11.33a1 1 0 000 1.41l4 4'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 60%;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, .3),
+    0 2px 4px -1px rgba(0, 0, 0, .1);
+}
+.budget-segment-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.budget-segment-label {
+  position: absolute;
+  top: 0;
+  left: var(--budget-segment-label-center);
+  translate: -50% 25%;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .5);
+  pointer-events: none;
+}
+#budget-segment-label-0 { --budget-segment-label-center: 12.5%; }
+#budget-segment-label-1 { --budget-segment-label-center: 37.5%; }
+#budget-segment-label-2 { --budget-segment-label-center: 62.5%; }
+#budget-segment-label-3 { --budget-segment-label-center: 87.5%; }
+
+@media (max-width: 700px) {
+  rangegroup {
+    --track-height: 44px;
+    --thumb-size: 32px;
+  }
+  rangegroup::slider-track {
+    block-size: 44px;
+    border-radius: 22px;
+  }
+  rangegroup::slider-thumb(*) {
+    inline-size: 32px;
+    block-size: 32px;
+  }
+}
 `}
         />
         <CodeSnippet
             lang="javascript"
             code={`
-/* Rent and Transport keep their share while dragged; Groceries and Internet
-   absorb the movement. The drag stops at the neighbouring thumb. */
-const rg = document.querySelector("#budget-range");
+const rg = document.querySelector("#budget-segment-range");
+const announcer = document.querySelector("#budget-segment-announcer");
+const labels = document.querySelectorAll(".budget-segment-label");
+const categories = ["Groceries", "Rent", "Transport", "Internet"];
 
-rg.addEventListener("input", () => {
+const update = () => {
   const stops = [0, ...rg.values, 100];
-  console.log(stops[2] - stops[1]); // constant while dragging bar 2
+  let announcement = "Budget updated. ";
+  labels.forEach((label, i) => {
+    const pct = Math.round(stops[i + 1] - stops[i]);
+    label.style.setProperty(
+      "--budget-segment-label-center",
+      (stops[i] + stops[i + 1]) / 2 + "%"
+    );
+    label.replaceChildren();
+    const categoryName = document.createElement("strong");
+    categoryName.textContent = categories[i];
+    label.append(categoryName, document.createElement("br"), document.createTextNode(pct + "%"));
+    announcement += categories[i] + ": " + pct + "%. ";
+  });
+  announcer.textContent = announcement.trim();
+};
+rg.querySelectorAll('input[type="range"]').forEach((input) => {
+  input.addEventListener("input", update);
 });
+update();
 `}
         />
     </ExampleCodeBlock>
@@ -191,14 +300,11 @@ rg.addEventListener("input", () => {
                     let announcement = "Budget updated. ";
                     labels.forEach((label, i) => {
                         const pct = Math.round(stops[i + 1] - stops[i]);
+                        label.style.setProperty("--budget-segment-label-center", `${(stops[i] + stops[i + 1]) / 2}%`);
                         label.replaceChildren();
                         const categoryName = document.createElement("strong");
                         categoryName.textContent = categories[i];
-                        label.append(
-                            categoryName,
-                            document.createElement("br"),
-                            document.createTextNode(`${pct}%`),
-                        );
+                        label.append(categoryName, document.createElement("br"), document.createTextNode(`${pct}%`));
                         announcement += categories[i] + ": " + pct + "%. ";
                     });
                     return announcement.trim();
@@ -211,21 +317,10 @@ rg.addEventListener("input", () => {
                 updateLabels();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

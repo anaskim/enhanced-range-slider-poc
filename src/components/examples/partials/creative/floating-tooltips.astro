@@ -4,49 +4,51 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="floating-tooltips" eyebrow="Creative styling" title="Floating anchored tooltips">
+<ExampleSection id="floating-tooltips" eyebrow="Creative styling" title="Floating anchored tooltips" status="partial">
     <Fragment slot="description">
         Invisible handles plus CSS Anchor Positioning makes external tooltips read as the draggable thumbs. The visible
         &ldquo;handle&rdquo; pills are just anchored DIVs.
+    </Fragment>
+    <Fragment slot="disclosure">
+        The prototype proves that authored elements can anchor to its indexed thumb proxies. The remaining gap is
+        standardizing and testing that cross-boundary anchoring contract, including dynamic thumbs, writing modes, and
+        fallback behavior; the pill text still requires authored JavaScript.
     </Fragment>
     <div slot="demo" style="position: relative">
         <style is:global>
             #floating-tooltip-range {
                 --track-height: 12px;
-                --thumb-size: 40px;
-                margin-top: 2rem;
-                margin-bottom: 2rem;
+                --thumb-inline-size: 40px;
+                --thumb-block-size: 20px;
+                margin-block: 2rem;
             }
-            #floating-tooltip-range::part(slider-track) {
+            #floating-tooltip-range::slider-track {
                 background-color: #d8d8de;
             }
-            #floating-tooltip-range::part(slider-segment-2) {
+            #floating-tooltip-range::slider-segment {
+                background: #d8d8de;
+            }
+            #floating-tooltip-range::slider-segment(2) {
                 background: var(--color-pink);
             }
-            #floating-tooltip-range::part(slider-thumb) {
-                anchor-name: var(--anchor-name);
-                background: transparent;
-                border: none;
-                box-shadow: none;
-                width: 40px;
-                height: 20px;
+            #floating-tooltip-range::slider-thumb(*) {
                 padding: 0;
+                border: none;
                 border-radius: 9999px;
+                background: transparent;
+                box-shadow: none;
             }
-            #floating-tooltip-range::part(slider-thumb-1) {
-                --thumb-transform: translate(-50%, calc(-100% - var(--track-height) / 2 - 5px));
-                --anchor-name: --floating-thumb-1;
-                transform: var(--thumb-transform);
+            #floating-tooltip-range::slider-thumb(1) {
+                anchor-name: --floating-thumb-1;
+                transform: translateY(calc(-100% - var(--track-height) / 2 - 5px));
             }
-            #floating-tooltip-range::part(slider-thumb-2) {
-                --thumb-transform: translate(-50%, calc(0% + var(--track-height) / 2 + 5px));
-                --anchor-name: --floating-thumb-2;
-                transform: var(--thumb-transform);
+            #floating-tooltip-range::slider-thumb(2) {
+                anchor-name: --floating-thumb-2;
+                transform: translateY(calc(var(--track-height) / 2 + 5px));
             }
 
             .floating-tooltip {
                 position: absolute;
-                position-anchor: var(--anchor-name);
                 pointer-events: none;
                 border: 1px solid var(--s-border-subtle);
                 border-radius: 9999px;
@@ -73,18 +75,18 @@ import CodeSnippet from "../../CodeSnippet.astro";
                     0 2px 4px -1px rgb(0 0 0 / 0.25);
             }
             #floating-tooltip-1 {
-                --anchor-name: --floating-thumb-1;
+                position-anchor: --floating-thumb-1;
                 bottom: anchor(bottom);
                 left: anchor(left);
             }
             #floating-tooltip-2 {
-                --anchor-name: --floating-thumb-2;
+                position-anchor: --floating-thumb-2;
                 top: anchor(top);
                 left: anchor(left);
             }
         </style>
-        <range-group id="floating-tooltip-range" min="0" max="100">
-            <legend slot="legend" class="visually-hidden">Floating tooltips</legend>
+        <rangegroup id="floating-tooltip-range" min="0" max="100">
+            <legend class="visually-hidden">Floating tooltips</legend>
             <label class="visually-hidden">
                 Value Handle 1
                 <input type="range" name="floating-tooltip-1" value="40" />
@@ -93,7 +95,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 Value Handle 2
                 <input type="range" name="floating-tooltip-2" value="65" />
             </label>
-        </range-group>
+        </rangegroup>
         <div id="floating-tooltip-1" class="floating-tooltip" aria-hidden="true">40</div>
         <div id="floating-tooltip-2" class="floating-tooltip" aria-hidden="true">65</div>
     </div>
@@ -113,47 +115,66 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-rangegroup::slider-track     { background: #d8d8de; }
-rangegroup::slider-segment(2){ background: #ec4899; }
-
-/* hide the real thumbs and name them for anchoring */
-rangegroup::slider-thumb(*) {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  width: 40px;
-  height: 20px;
+rangegroup {
+  --track-height: 12px;
+  --thumb-inline-size: 40px;
+  --thumb-block-size: 20px;
 }
-rangegroup::slider-thumb(1) { anchor-name: --floating-thumb-1; }
-rangegroup::slider-thumb(2) { anchor-name: --floating-thumb-2; }
+rangegroup::slider-track { background: #d8d8de; }
+rangegroup::slider-segment { background: #d8d8de; }
+rangegroup::slider-segment(2) { background: var(--color-pink); }
 
-/* the visible pills are absolutely positioned siblings */
+/* Transparent native proxies remain the interactive handles and anchors. */
+rangegroup::slider-thumb(*) {
+  inline-size: 40px;
+  block-size: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  box-shadow: none;
+}
+rangegroup::slider-thumb(1) {
+  anchor-name: --floating-thumb-1;
+  transform: translateY(calc(-100% - var(--track-height) / 2 - 5px));
+}
+rangegroup::slider-thumb(2) {
+  anchor-name: --floating-thumb-2;
+  transform: translateY(calc(var(--track-height) / 2 + 5px));
+}
+
+/* The authored pills are anchored to the native thumb proxies. */
 .floating-tooltip {
   position: absolute;
   width: 40px; height: 28px;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--s-border-subtle);
   border-radius: 9999px;
-  color: #0b1220;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.25);
-  display: grid;
-  place-items: center;
+  color: var(--p-color-warm-text-strong);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.25),
+    0 2px 4px -1px rgb(0 0 0 / 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
 }
 html.dark .floating-tooltip {
-  background: #1a2538;
-  border-color: #233049;
-  color: #f8fafc;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.45);
+  background: var(--p-color-cool-surface-2);
+  border-color: var(--p-color-cool-border);
+  color: var(--p-color-cool-text-strong);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.45),
+    0 2px 4px -1px rgb(0 0 0 / 0.25);
 }
 #floating-tooltip-1 {
   position-anchor: --floating-thumb-1;
   bottom: anchor(bottom);
-  left:   anchor(left);
+  left: anchor(left);
 }
 #floating-tooltip-2 {
   position-anchor: --floating-thumb-2;
-  top:  anchor(top);
+  top: anchor(top);
   left: anchor(left);
 }
 `}
@@ -165,11 +186,11 @@ const rg = document.querySelector("#floating-tooltip-range");
 const t1 = document.querySelector("#floating-tooltip-1");
 const t2 = document.querySelector("#floating-tooltip-2");
 
-rg.addEventListener("input", () => {
+rg.querySelectorAll('input[type="range"]').forEach(input => input.addEventListener("input", () => {
   const [a, b] = rg.values;
   t1.textContent = Math.round(a);
   t2.textContent = Math.round(b);
-});
+}));
 `}
         />
     </ExampleCodeBlock>
@@ -180,28 +201,17 @@ rg.addEventListener("input", () => {
                 const t1 = document.querySelector("#floating-tooltip-1");
                 const t2 = document.querySelector("#floating-tooltip-2");
 
-                rg.addEventListener("input", () => {
+                const update = () => {
                     const [a, b] = rg.values;
                     t1.textContent = Math.round(a);
                     t2.textContent = Math.round(b);
-                });
+                };
+                rg.querySelectorAll('input[type="range"]').forEach((input) => input.addEventListener("input", update));
             };
-
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

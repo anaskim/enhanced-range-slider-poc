@@ -14,67 +14,81 @@ import CodeSnippet from "../../CodeSnippet.astro";
             #timeline-example {
                 --track-height: 2px;
             }
-            #timeline-example::part(slider-track) {
-                background: #b8bfc8;
+            #timeline-example::slider-segment {
+                block-size: var(--track-height);
+                inset-block-start: 7px;
+                border-radius: 0;
+                background: #d8d8de;
             }
-            #timeline-example::part(slider-thumb) {
-                --slider-thumb-color: var(--color-teal);
+            #timeline-example::slider-segment(1) {
+                border-radius: 999px 0 0 999px;
             }
-            #timeline-example::part(slider-segment-2) {
+            #timeline-example::slider-segment(2) {
                 background: var(--color-teal);
             }
-
-            #timeline-example::part(slider-tick) {
-                background: var(--text-soft);
+            #timeline-example::slider-segment(3) {
+                border-radius: 0 999px 999px 0;
+            }
+            .timeline-milestones {
+                position: relative;
+                block-size: 2.7rem;
+                margin-top: -10px;
+                color: var(--text-soft);
+                text-align: center;
+                font-size: 0.75rem;
+            }
+            .timeline-milestones span {
+                position: absolute;
+                inset-inline-start: var(--timeline-position);
+                translate: -50% 0;
+                white-space: nowrap;
+                z-index: 1;
+            }
+            .timeline-milestones span::before {
+                display: block;
                 width: 2px;
                 height: 10px;
-                border-radius: 2px;
+                margin: 0 auto 0.3rem;
+                background: currentColor;
+                content: "";
             }
-            #timeline-example::part(slider-tick-1),
-            #timeline-example::part(slider-tick-3),
-            #timeline-example::part(slider-tick-5) {
-                background: var(--color-teal);
-                height: 20px;
-                width: 4px;
-                transform: translate(-2px, -7px);
-            }
-            #timeline-example::part(slider-tick-label) {
-                color: var(--text-muted);
-            }
-            #timeline-example::part(slider-tick-label-1),
-            #timeline-example::part(slider-tick-label-3),
-            #timeline-example::part(slider-tick-label-5) {
+            .timeline-milestones span:nth-child(odd) {
                 color: var(--color-teal);
-                font-weight: bold;
+                font-weight: 700;
             }
-
+            .timeline-milestones span:nth-child(odd)::before {
+                width: 4px;
+                height: 20px;
+            }
             @media (max-width: 700px) {
-                #timeline-example::part(slider-tick) {
-                    height: 8px;
-                }
-                #timeline-example::part(slider-tick-1),
-                #timeline-example::part(slider-tick-3),
-                #timeline-example::part(slider-tick-5) {
-                    height: 15px;
-                    width: 3px;
-                    transform: translate(-1px, -4px);
-                }
-                #timeline-example::part(slider-tick-label) {
+                .timeline-milestones span {
                     font-size: 0.7rem;
                 }
+                .timeline-milestones span::before {
+                    height: 8px;
+                }
+                .timeline-milestones span:nth-child(odd)::before {
+                    width: 3px;
+                    height: 15px;
+                }
             }
-
             @media (max-width: 420px) {
-                #timeline-example::part(slider-tick-label) {
+                .timeline-milestones span {
                     font-size: 0.64rem;
                 }
             }
         </style>
-        <range-group id="timeline-example" min="0" max="100" list="timeline-datalist">
-            <legend slot="legend" class="visually-hidden">Styled timeline</legend>
-            <label class="visually-hidden">Start Date <input type="range" value="10" /></label>
-            <label class="visually-hidden">End Date <input type="range" value="90" /></label>
-        </range-group>
+        <rangegroup id="timeline-example" min="0" max="100" list="timeline-datalist" stepbetween="25">
+            <legend class="visually-hidden">Styled timeline</legend>
+            <label class="visually-hidden">
+                Start Date
+                <input type="range" min="0" max="100" step="25" value="25" />
+            </label>
+            <label class="visually-hidden">
+                End Date
+                <input type="range" min="0" max="100" step="25" value="75" />
+            </label>
+        </rangegroup>
         <datalist id="timeline-datalist">
             <option value="0" label="start"></option>
             <option value="25"></option>
@@ -82,15 +96,22 @@ import CodeSnippet from "../../CodeSnippet.astro";
             <option value="75"></option>
             <option value="100" label="End"></option>
         </datalist>
+        <div class="timeline-milestones" aria-hidden="true">
+            <span style="--timeline-position: 0%">start</span>
+            <span style="--timeline-position: 25%">25</span>
+            <span style="--timeline-position: 50%">mid</span>
+            <span style="--timeline-position: 75%">75</span>
+            <span style="--timeline-position: 100%">End</span>
+        </div>
     </div>
     <ExampleCodeBlock slot="code">
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup min="0" max="100" list="timeline-datalist">
+<rangegroup min="0" max="100" list="timeline-datalist" stepbetween="25">
   <legend>Project timeline</legend>
-  <label>Start date <input type="range" value="10"></label>
-  <label>End date   <input type="range" value="90"></label>
+  <label>Start date <input type="range" min="0" max="100" step="25" value="25"></label>
+  <label>End date   <input type="range" min="0" max="100" step="25" value="75"></label>
 </rangegroup>
 
 <datalist id="timeline-datalist">
@@ -100,38 +121,57 @@ import CodeSnippet from "../../CodeSnippet.astro";
   <option value="75"></option>
   <option value="100" label="End"></option>
 </datalist>
+
+<div class="timeline-milestones" aria-hidden="true">
+  <span style="--timeline-position: 0%">start</span>
+  <span style="--timeline-position: 25%">25</span>
+  <span style="--timeline-position: 50%">mid</span>
+  <span style="--timeline-position: 75%">75</span>
+  <span style="--timeline-position: 100%">End</span>
+</div>
 `}
         />
         <CodeSnippet
             lang="css"
             code={`
 /* a hair-thin track */
-rangegroup::slider-track     { background: #b8bfc8; height: 2px; }
-rangegroup::slider-segment(2) { background: #14b8a6; }
-rangegroup::slider-thumb(*)  { background-color: #14b8a6; }
+rangegroup { --track-height: 2px; }
+rangegroup::slider-segment {
+  block-size: var(--track-height);
+  inset-block-start: 7px;
+  background: #d8d8de;
+}
+rangegroup::slider-segment(2) { background: var(--color-teal); }
 
-/* baseline ticks: short, grey */
-rangegroup::slider-tick(*) {
-  background: #94a3b8;
+.timeline-milestones {
+  position: relative;
+  block-size: 2.7rem;
+  margin-top: -10px;
+  color: var(--text-soft);
+  text-align: center;
+}
+.timeline-milestones span {
+  position: absolute;
+  inset-inline-start: var(--timeline-position);
+  translate: -50% 0;
+  white-space: nowrap;
+  z-index: 1;
+}
+.timeline-milestones span::before {
+  display: block;
   width: 2px;
   height: 10px;
-  border-radius: 2px;
+  margin: 0 auto .3rem;
+  background: currentColor;
+  content: "";
 }
-rangegroup::slider-tick-label { color: #6b7280; }
-
-/* milestone ticks (start / mid / end) stand out */
-rangegroup::slider-tick(1),
-rangegroup::slider-tick(3),
-rangegroup::slider-tick(5) {
-  background: #14b8a6;
-  height: 20px;
+.timeline-milestones span:nth-child(odd) {
+  color: var(--color-teal);
+  font-weight: 700;
+}
+.timeline-milestones span:nth-child(odd)::before {
   width: 4px;
-}
-rangegroup::slider-tick-label(1),
-rangegroup::slider-tick-label(3),
-rangegroup::slider-tick-label(5) {
-  color: #14b8a6;
-  font-weight: bold;
+  height: 20px;
 }
 `}
         />

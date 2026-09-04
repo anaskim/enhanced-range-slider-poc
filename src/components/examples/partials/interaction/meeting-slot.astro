@@ -4,7 +4,7 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="meeting-slot" eyebrow="Interaction modes" title="Meeting duration slot">
+<ExampleSection id="meeting-slot" eyebrow="Interaction modes" title="Meeting duration slot" status="partial">
     <Fragment slot="description">
         A one-hour meeting on a workday calendar. Drag the block to a free slot without changing
         its length, or press anywhere on the day to send it there; the handles still resize. Busy
@@ -56,41 +56,52 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 position: relative;
                 z-index: 2;
             }
-            #meeting-slot-range::part(slider-segment-2) {
+            #meeting-slot-range::slider-segment(2) {
                 background: var(--ms-free);
+                cursor: grab;
             }
-            #meeting-slot-range.is-conflict::part(slider-segment-2) {
+            #meeting-slot-range.is-conflict::slider-segment(2) {
                 background: var(--ms-conflict);
             }
-            #meeting-slot-range::part(slider-thumb) {
-                --slider-thumb-color: var(--ms-free);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--ms-free) 55%, white);
+            .meeting-slot-ticks {
+                position: relative;
+                z-index: 3;
+                height: 4px;
+                margin-top: -7px;
+                color: var(--text-soft);
+                background: repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px 5%);
+                pointer-events: none;
             }
-            #meeting-slot-range.is-conflict::part(slider-thumb) {
-                --slider-thumb-color: var(--ms-conflict);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--ms-conflict) 55%, white);
+            .meeting-slot-ticks::after {
+                content: "";
+                position: absolute;
+                inset-block: 0;
+                inset-inline-end: 0;
+                width: 1px;
+                background: currentColor;
             }
-            #meeting-slot-range::part(slider-tick) {
-                background: var(--text-soft);
-            }
-            #meeting-slot-range::part(slider-tick-label) {
+            .meeting-slot-scale {
+                position: relative;
+                height: 1.25rem;
+                margin-top: 0.35rem;
                 color: var(--text-muted);
+                font-size: 0.72rem;
+                line-height: 1;
             }
-            #meeting-slot-range::part(slider-tick-label-2),
-            #meeting-slot-range::part(slider-tick-label-4),
-            #meeting-slot-range::part(slider-tick-label-6),
-            #meeting-slot-range::part(slider-tick-label-8),
-            #meeting-slot-range::part(slider-tick-label-10),
-            #meeting-slot-range::part(slider-tick-label-12),
-            #meeting-slot-range::part(slider-tick-label-14),
-            #meeting-slot-range::part(slider-tick-label-16),
-            #meeting-slot-range::part(slider-tick-label-18),
-            #meeting-slot-range::part(slider-tick-label-20) {
-                display: none;
+            .meeting-slot-scale span {
+                position: absolute;
+                inset-inline-start: var(--meeting-position);
+                translate: -50% 0;
+                white-space: nowrap;
             }
-            /* Clears the datalist tick labels, which overflow below the component box. */
+            .meeting-slot-scale span:first-child {
+                translate: 0 0;
+            }
+            .meeting-slot-scale span:last-child {
+                translate: -100% 0;
+            }
             .meeting-slot-readout {
-                margin: 3rem 0 0;
+                margin: 0.85rem 0 0;
                 font-size: 0.9rem;
                 color: var(--text-muted);
             }
@@ -102,9 +113,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
             @media (max-width: 700px) {
                 .meeting-slot-busy {
                     font-size: 0;
-                }
-                #meeting-slot-range::part(slider-tick-label) {
-                    font-size: 0.7rem;
                 }
             }
         </style>
@@ -123,24 +131,31 @@ import CodeSnippet from "../../CodeSnippet.astro";
             >
                 Design review
             </div>
-            <range-group
-                id="meeting-slot-range"
-                min="480"
-                max="1080"
-                list="meeting-ticks"
-                stepbetween="30"
-                interaction="range"
-            >
-                <legend slot="legend" class="visually-hidden">Meeting time</legend>
+            <rangegroup id="meeting-slot-range" min="480" max="1080" list="meeting-ticks" stepbetween="30">
+                <legend class="visually-hidden">Meeting time</legend>
                 <label class="visually-hidden">
                     Start
-                    <input type="range" name="meeting-start" value="600" />
+                    <input type="range" name="meeting-start" min="480" max="1080" value="600" />
                 </label>
                 <label class="visually-hidden">
                     End
-                    <input type="range" name="meeting-end" value="660" />
+                    <input type="range" name="meeting-end" min="480" max="1080" value="660" />
                 </label>
-            </range-group>
+            </rangegroup>
+            <div class="meeting-slot-ticks" aria-hidden="true"></div>
+            <div class="meeting-slot-scale" aria-hidden="true">
+                <span style="--meeting-position: 0%">8 AM</span>
+                <span style="--meeting-position: 10%">9 AM</span>
+                <span style="--meeting-position: 20%">10 AM</span>
+                <span style="--meeting-position: 30%">11 AM</span>
+                <span style="--meeting-position: 40%">12 PM</span>
+                <span style="--meeting-position: 50%">1 PM</span>
+                <span style="--meeting-position: 60%">2 PM</span>
+                <span style="--meeting-position: 70%">3 PM</span>
+                <span style="--meeting-position: 80%">4 PM</span>
+                <span style="--meeting-position: 90%">5 PM</span>
+                <span style="--meeting-position: 100%">6 PM</span>
+            </div>
         </div>
         <datalist id="meeting-ticks">
             <option value="480" label="8 AM"></option>
@@ -171,11 +186,94 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup min="480" max="1080" list="meeting-ticks" stepbetween="30" interaction="range">
+<rangegroup min="480" max="1080" list="meeting-ticks" stepbetween="30">
+  <!-- Interior segment dragging is currently an internal prototype behavior.
+       Calendar availability and conflict policy remain author-owned. -->
   <legend>Meeting time</legend>
-  <label>Start <input type="range" name="meeting-start" value="600"></label>
-  <label>End   <input type="range" name="meeting-end" value="660"></label>
+  <label>Start <input type="range" name="meeting-start" min="480" max="1080" value="600"></label>
+  <label>End   <input type="range" name="meeting-end" min="480" max="1080" value="660"></label>
 </rangegroup>
+<div class="meeting-slot-ticks" aria-hidden="true"></div>
+<div class="meeting-slot-scale" aria-hidden="true">
+  <span style="--meeting-position: 0%">8 AM</span>
+  <span style="--meeting-position: 10%">9 AM</span>
+  <span style="--meeting-position: 20%">10 AM</span>
+  <span style="--meeting-position: 30%">11 AM</span>
+  <span style="--meeting-position: 40%">12 PM</span>
+  <span style="--meeting-position: 50%">1 PM</span>
+  <span style="--meeting-position: 60%">2 PM</span>
+  <span style="--meeting-position: 70%">3 PM</span>
+  <span style="--meeting-position: 80%">4 PM</span>
+  <span style="--meeting-position: 90%">5 PM</span>
+  <span style="--meeting-position: 100%">6 PM</span>
+</div>
+`}
+        />
+        <CodeSnippet
+            lang="css"
+            code={`
+.meeting-slot-card {
+  --ms-free: #14b8a6;
+  --ms-busy: #f59e0b;
+  --ms-conflict: #ef4444;
+}
+.meeting-slot-busy {
+  position: absolute;
+  top: 0;
+  height: 1.35rem;
+  background: color-mix(in oklab, var(--ms-busy) 28%, var(--surface));
+  border: 1px solid color-mix(in oklab, var(--ms-busy) 45%, var(--border));
+}
+.meeting-slot-busy-standup { left: 10%; width: 5%; }
+.meeting-slot-busy-review { left: 50%; width: 10%; }
+rangegroup::slider-segment(2) {
+  background: var(--ms-free);
+  cursor: grab;
+}
+rangegroup.is-conflict::slider-segment(2) {
+  background: var(--ms-conflict);
+}
+.meeting-slot-ticks {
+  position: relative;
+  z-index: 3;
+  height: 4px;
+  margin-top: -7px;
+  color: var(--text-soft);
+  background: repeating-linear-gradient(
+    to right,
+    currentColor 0 1px,
+    transparent 1px 5%
+  );
+  pointer-events: none;
+}
+.meeting-slot-ticks::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 1px;
+  background: currentColor;
+}
+.meeting-slot-scale {
+  position: relative;
+  height: 1.25rem;
+  margin-top: .35rem;
+  color: var(--text-muted);
+  font-size: .72rem;
+  line-height: 1;
+}
+.meeting-slot-scale span {
+  position: absolute;
+  inset-inline-start: var(--meeting-position);
+  translate: -50% 0;
+  white-space: nowrap;
+}
+.meeting-slot-scale span:first-child { translate: 0 0; }
+.meeting-slot-scale span:last-child { translate: -100% 0; }
+.meeting-slot-readout[data-conflict="true"] {
+  color: var(--ms-conflict);
+  font-weight: 600;
+}
 `}
         />
         <CodeSnippet
@@ -185,8 +283,22 @@ const busy = [
   { start: 540, end: 570, label: "Standup" },
   { start: 780, end: 840, label: "Design review" },
 ];
+const rg = document.querySelector("#meeting-slot-range");
+const readout = document.querySelector("#meeting-slot-readout");
+const format = (minutes) => {
+  const hour = Math.floor(minutes / 60);
+  return \`\${hour % 12 || 12}:\${String(minutes % 60).padStart(2, "0")} \${hour >= 12 ? "PM" : "AM"}\`;
+};
+
 // Visual conflict styling can track input; the status readout speaks on change
 // so assistive tech is not flooded mid-drag.
+rg.addEventListener("input", () => {
+  const [a, b] = rg.values;
+  rg.classList.toggle(
+    "is-conflict",
+    busy.some((block) => Math.max(a, block.start) < Math.min(b, block.end))
+  );
+});
 rg.addEventListener("change", () => {
   const [a, b] = rg.values;
   const hit = busy.find((block) => Math.max(a, block.start) < Math.min(b, block.end));
@@ -256,21 +368,10 @@ rg.addEventListener("change", () => {
                 syncReadout();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

@@ -4,16 +4,14 @@
     "trailingComma": "all",
     "singleQuote": false,
     "jsxSingleQuote": false,
-    "importOrder": ["style.css", "^\\u0000", "^@/(.*)$", "^[./]"],
+    "plugins": ["prettier-plugin-astro"],
     "overrides": [
         {
             "files": ["*.css", "*.scss"],
             "options": {
                 "tabWidth": 4,
-                "useTabs": true,
+                "useTabs": false,
                 "trailingComma": "all",
-                "plugins": ["prettier-plugin-css-order"],
-                "cssDeclarationSorterOrder": "smacss",
                 "singleQuote": false
             }
         }

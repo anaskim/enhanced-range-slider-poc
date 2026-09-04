@@ -35,7 +35,11 @@ export const exampleNav: ExampleNavGroup[] = [
     {
         eyebrow: "Interaction modes",
         items: [
-            { id: "interaction-mode", label: "Interaction mode", title: "Interaction mode (working name)" },
+            {
+                id: "interaction-mode",
+                label: "Interaction mode",
+                title: "Interaction mode (working name)",
+            },
             { id: "video-timeline", label: "Video timeline trim", title: "Video timeline trim" },
             { id: "meeting-slot", label: "Meeting duration slot", title: "Meeting duration slot" },
         ],
@@ -70,8 +74,16 @@ export const exampleNav: ExampleNavGroup[] = [
             { id: "star-rating", label: "Star rating filter", title: "Star rating filter" },
             { id: "gradient-stops", label: "Color-stop gradient editor", title: "Color-stop gradient editor" },
             { id: "timeline", label: "Styled timeline", title: "Styled timeline" },
-            { id: "wavy-track", label: "Wavy track shape", title: "Wavy track shape" },
-            { id: "circular-track", label: "Circular track shape", title: "Circular track shape" },
+            {
+                id: "wavy-track",
+                label: "Wavy track shape",
+                title: "Wavy track shape",
+            },
+            {
+                id: "circular-track",
+                label: "Circular track shape",
+                title: "Circular track shape",
+            },
         ],
     },
     {

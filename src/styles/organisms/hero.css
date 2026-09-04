@@ -25,10 +25,6 @@
     letter-spacing: -0.03em;
     color: var(--text-strong);
     font-weight: 800;
-    background: none;
-    background-clip: initial;
-    -webkit-background-clip: initial;
-    text-shadow: none;
 }
 
 .hero h1 code {
@@ -53,8 +49,4 @@
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 6px;
-}
-
-.hero-actions .btn {
-    box-shadow: none;
 }

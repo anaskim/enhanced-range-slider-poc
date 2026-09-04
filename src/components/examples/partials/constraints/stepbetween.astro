@@ -10,21 +10,19 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #stepbetween-example::part(slider-segment-1) {
+            #stepbetween-example::slider-segment(1),
+            #stepbetween-example::slider-segment(3) {
                 background-color: oklch(0.554 0.104 233.66);
             }
-            #stepbetween-example::part(slider-segment-2) {
+            #stepbetween-example::slider-segment(2) {
                 background-color: oklch(0.65 0.18 142);
             }
-            #stepbetween-example::part(slider-segment-3) {
-                background-color: oklch(0.554 0.104 233.66);
-            }
         </style>
-        <range-group id="stepbetween-example" min="0" max="100" stepbetween="10">
-            <legend slot="legend" class="visually-hidden">Stepbetween example</legend>
+        <rangegroup id="stepbetween-example" min="0" max="100" stepbetween="10">
+            <legend class="visually-hidden">Stepbetween example</legend>
             <label class="visually-hidden">Minimum <input type="range" value="40" /></label>
             <label class="visually-hidden">Maximum <input type="range" value="70" /></label>
-        </range-group>
+        </rangegroup>
     </div>
     <ExampleCodeBlock slot="code">
         <CodeSnippet

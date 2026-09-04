@@ -25,22 +25,41 @@ import CodeSnippet from "../../CodeSnippet.astro";
                     0 6px 18px rgba(0, 0, 0, 0.08);
             }
             #dynamic-range {
-                --thumb-size: 26px;
                 --track-height: 16px;
+                --thumb-size: 26px;
+                min-width: 0;
             }
-            #dynamic-range::part(slider-track) {
+            #dynamic-range::slider-track {
                 background: var(--grad, #ccc);
-                border-radius: 999px;
                 box-shadow: inset 0 0 0 1px var(--border);
             }
-            #dynamic-range::part(slider-segment) {
+            #dynamic-range::slider-segment {
                 background: transparent !important;
             }
-            #dynamic-range::part(slider-thumb) {
+            #dynamic-range::slider-thumb(*) {
                 border: 3px solid white;
+                background: var(--accent);
                 box-shadow:
                     0 4px 14px rgba(0, 0, 0, 0.22),
                     inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+            }
+            #dynamic-range::slider-thumb(1) {
+                background: var(--dynamic-thumb-1, var(--accent));
+            }
+            #dynamic-range::slider-thumb(2) {
+                background: var(--dynamic-thumb-2, var(--accent));
+            }
+            #dynamic-range::slider-thumb(3) {
+                background: var(--dynamic-thumb-3, var(--accent));
+            }
+            #dynamic-range::slider-thumb(4) {
+                background: var(--dynamic-thumb-4, var(--accent));
+            }
+            #dynamic-range::slider-thumb(5) {
+                background: var(--dynamic-thumb-5, var(--accent));
+            }
+            #dynamic-range::slider-thumb(6) {
+                background: var(--dynamic-thumb-6, var(--accent));
             }
             .dynamic-range-wrap {
                 position: relative;
@@ -100,27 +119,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 outline: 2px solid var(--accent, #3b82f6);
                 outline-offset: 2px;
             }
-            .dynamic-card:has(#dynamic-range:state(dragging)) .dynamic-color-list .dynamic-color-input {
-                pointer-events: none;
-            }
-            #dynamic-range::part(slider-thumb-1) {
-                background-color: var(--c1, #888);
-            }
-            #dynamic-range::part(slider-thumb-2) {
-                background-color: var(--c2, #888);
-            }
-            #dynamic-range::part(slider-thumb-3) {
-                background-color: var(--c3, #888);
-            }
-            #dynamic-range::part(slider-thumb-4) {
-                background-color: var(--c4, #888);
-            }
-            #dynamic-range::part(slider-thumb-5) {
-                background-color: var(--c5, #888);
-            }
-            #dynamic-range::part(slider-thumb-6) {
-                background-color: var(--c6, #888);
-            }
             .dynamic-code {
                 background: #0b1220;
                 color: #e2e8f0;
@@ -135,12 +133,12 @@ import CodeSnippet from "../../CodeSnippet.astro";
         </style>
         <div class="dynamic-preview" aria-hidden="true"></div>
         <div class="dynamic-range-wrap">
-            <range-group id="dynamic-range" min="0" max="100" stepbetween="4">
-                <legend slot="legend" class="visually-hidden">Gradient color stops</legend>
+            <rangegroup id="dynamic-range" min="0" max="100" stepbetween="4">
+                <legend class="visually-hidden">Gradient color stops</legend>
                 <label class="visually-hidden">Stop 1 <input type="range" value="15" /></label>
                 <label class="visually-hidden">Stop 2 <input type="range" value="50" /></label>
                 <label class="visually-hidden">Stop 3 <input type="range" value="85" /></label>
-            </range-group>
+            </rangegroup>
         </div>
         <div class="dynamic-color-list" id="dynamic-color-list" aria-label="Stop colors"></div>
         <output class="dynamic-code" id="dynamic-code"></output>
@@ -154,6 +152,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
             lang="html"
             code={`
 <rangegroup id="dynamic-range" min="0" max="100" stepbetween="4">
+  <legend>Gradient color stops</legend>
   <label>Stop 1 <input type="range" value="15"></label>
   <label>Stop 2 <input type="range" value="50"></label>
   <label>Stop 3 <input type="range" value="85"></label>
@@ -164,6 +163,46 @@ import CodeSnippet from "../../CodeSnippet.astro";
 
 <button id="dynamic-add">Add stop</button>
 <button id="dynamic-remove">Remove stop</button>
+`}
+        />
+        <CodeSnippet
+            lang="css"
+            code={`
+.dynamic-preview {
+  height: 80px;
+  border-radius: 12px;
+  background: var(--grad, #ccc);
+}
+rangegroup {
+  --track-height: 16px;
+  --thumb-size: 26px;
+}
+rangegroup::slider-track {
+  block-size: 16px;
+  background: var(--grad, #ccc);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+rangegroup::slider-segment {
+  background: transparent !important;
+}
+/* The wildcard also styles thumbs added later. */
+rangegroup::slider-thumb(*) {
+  inline-size: 26px;
+  block-size: 26px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, .22),
+    inset 0 0 0 1px rgba(0, 0, 0, .1);
+}
+rangegroup::slider-thumb(1) { background: var(--dynamic-thumb-1, var(--accent)); }
+rangegroup::slider-thumb(2) { background: var(--dynamic-thumb-2, var(--accent)); }
+rangegroup::slider-thumb(3) { background: var(--dynamic-thumb-3, var(--accent)); }
+rangegroup::slider-thumb(4) { background: var(--dynamic-thumb-4, var(--accent)); }
+rangegroup::slider-thumb(5) { background: var(--dynamic-thumb-5, var(--accent)); }
+rangegroup::slider-thumb(6) { background: var(--dynamic-thumb-6, var(--accent)); }
 `}
         />
         <CodeSnippet
@@ -200,7 +239,7 @@ const syncColorList = () => {
       input.dataset.index = String(i);
       input.addEventListener("input", () => {
         const index = Number(input.dataset.index);
-        const target = rg.inputs[index];
+        const target = rg.getRangeInput(index);
         if (!target) return;
         colorFor.set(target, input.value);
         render();
@@ -228,11 +267,14 @@ const syncColorList = () => {
 
 const render = () => {
   ensureColors();
-  const stops = rg.inputs.map((inp, i) => colorFor.get(inp) + " " + Math.round(rg.values[i]) + "%");
+  const stops = rg.inputs.map((inp, i) => {
+    const color = colorFor.get(inp);
+    rg.style.setProperty("--dynamic-thumb-" + (i + 1), color);
+    return color + " " + Math.round(rg.values[i]) + "%";
+  });
   const grad  = "linear-gradient(to right, " + stops.join(", ") + ")";
   /* set on the shared ancestor so the preview AND the slider track inherit it */
   card.style.setProperty("--grad", grad);
-  rg.inputs.forEach((inp, i) => card.style.setProperty("--c" + (i + 1), colorFor.get(inp)));
   syncColorList();
   document.querySelector("#dynamic-code").value = grad;
   addBtn.disabled = rg.inputs.length >= 6;
@@ -246,7 +288,13 @@ addBtn.addEventListener("click", () => {
   for (let i = 0; i < v.length - 1; i++) {
     if (v[i + 1] - v[i] > gap) { gap = v[i + 1] - v[i]; value = (v[i] + v[i + 1]) / 2; }
   }
-  rg.addThumb(Math.round(value), { label: "Stop " + (rg.inputs.length + 1) });
+  const input = rg.addThumb(Math.round(value), {
+    min: "0",
+    max: "100",
+    label: "Stop " + (rg.inputs.length + 1),
+  });
+  /* Keep the semantic input while its native proxy remains on the shared track. */
+  input.classList.add("visually-hidden");
   render();
 });
 
@@ -255,7 +303,10 @@ remBtn.addEventListener("click", () => {
   render();
 });
 
-rg.addEventListener("input", render);
+const handleRangeEvent = event => {
+  if (event.target instanceof HTMLInputElement && event.target.type === "range") render();
+};
+rg.addEventListener("input", handleRangeEvent);
 render();
 `}
         />
@@ -284,7 +335,7 @@ render();
                 const syncColorList = () => {
                     if (colorList.children.length !== rg.inputs.length) {
                         colorList.replaceChildren();
-                        rg.inputs.forEach((inp, i) => {
+                        rg.inputs.forEach((_, i) => {
                             const row = document.createElement("label");
                             row.className = "dynamic-color-row";
                             row.innerHTML =
@@ -296,7 +347,7 @@ render();
                             input.dataset.index = String(i);
                             input.addEventListener("input", () => {
                                 const index = Number(input.dataset.index);
-                                const target = rg.inputs[index];
+                                const target = rg.getRangeInput(index);
                                 if (!target) return;
                                 colorFor.set(target, input.value);
                                 render();
@@ -324,12 +375,13 @@ render();
 
                 const render = () => {
                     ensureColors();
-                    const stops = rg.inputs.map(
-                        (inp, i) => `${colorFor.get(inp)} ${Math.round(rg.values[i])}%`,
-                    );
+                    const stops = rg.inputs.map((inp, i) => {
+                        const color = colorFor.get(inp);
+                        rg.style.setProperty(`--dynamic-thumb-${i + 1}`, color);
+                        return `${color} ${Math.round(rg.values[i])}%`;
+                    });
                     const grad = `linear-gradient(to right, ${stops.join(", ")})`;
                     card.style.setProperty("--grad", grad);
-                    rg.inputs.forEach((inp, i) => card.style.setProperty(`--c${i + 1}`, colorFor.get(inp)));
                     syncColorList();
                     code.value = grad;
                     addBtn.disabled = rg.inputs.length >= 6;
@@ -346,7 +398,12 @@ render();
                             value = (v[i] + v[i + 1]) / 2;
                         }
                     }
-                    rg.addThumb(Math.round(value), { label: `Stop ${rg.inputs.length + 1}` });
+                    const input = rg.addThumb(Math.round(value), {
+                        min: "0",
+                        max: "100",
+                        label: `Stop ${rg.inputs.length + 1}`,
+                    });
+                    input.classList.add("visually-hidden");
                     render();
                 });
 
@@ -355,25 +412,17 @@ render();
                     render();
                 });
 
-                rg.addEventListener("input", render);
+                const handleRangeEvent = (event) => {
+                    if (event.target instanceof HTMLInputElement && event.target.type === "range") render();
+                };
+                rg.addEventListener("input", handleRangeEvent);
                 render();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

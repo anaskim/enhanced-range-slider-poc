@@ -11,15 +11,12 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #disabled-group-example::part(slider-segment-2) {
+            #disabled-group-example::slider-segment(2) {
                 background-color: var(--color-purple);
             }
-            #disabled-group-example::part(slider-thumb) {
-                --slider-thumb-color: var(--color-purple);
-            }
         </style>
-        <range-group id="disabled-group-example" min="0" max="100" disabled>
-            <legend slot="legend" class="visually-hidden">Fully disabled group</legend>
+        <rangegroup id="disabled-group-example" min="0" max="100" disabled>
+            <legend class="visually-hidden">Fully disabled group</legend>
             <label class="visually-hidden">
                 Minimum
                 <input type="range" name="dis-group-min" value="25" />
@@ -28,7 +25,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 Maximum
                 <input type="range" name="dis-group-max" value="75" />
             </label>
-        </range-group>
+        </rangegroup>
     </div>
     <ExampleCodeBlock slot="code">
         <CodeSnippet
@@ -45,13 +42,12 @@ import CodeSnippet from "../../CodeSnippet.astro";
             lang="css"
             code={`
 rangegroup::slider-segment(2) {
-  background-color: #a855f7;        /* selected range */
+  background-color: var(--color-purple);
 }
-rangegroup::slider-thumb(*) {
-  background-color: #a855f7;
+/* Thumb geometry, color, and disabled rendering come from UA styles. */
+rangegroup[disabled] {
+  opacity: .58;
 }
-/* The :disabled state itself is handled by user-agent styles -
-   desaturated thumbs, muted track, removed from tab order. */
 `}
         />
     </ExampleCodeBlock>

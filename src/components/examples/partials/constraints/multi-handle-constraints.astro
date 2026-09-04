@@ -11,38 +11,26 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #constraints-example-3::part(slider-segment-1) {
+            #constraints-example-3::slider-segment(1),
+            #constraints-example-3::slider-segment(4) {
                 background-color: #3949ab;
             }
-            #constraints-example-3::part(slider-segment-2) {
+            #constraints-example-3::slider-segment(2) {
                 background-color: var(--color-orange);
             }
-            #constraints-example-3::part(slider-segment-3) {
+            #constraints-example-3::slider-segment(3) {
                 background-color: var(--color-yellow);
             }
-            #constraints-example-3::part(slider-segment-4) {
-                background-color: #3949ab;
-            }
-
-            #constraints-example-3::part(slider-thumb-1) {
-                --slider-thumb-color: #3949ab;
-            }
-            #constraints-example-3::part(slider-thumb-2) {
-                --slider-thumb-color: var(--color-orange);
-            }
-            #constraints-example-3::part(slider-thumb-3) {
-                --slider-thumb-color: var(--color-yellow);
-            }
         </style>
-        <range-group id="constraints-example-3" min="0" max="100">
-            <legend slot="legend" class="visually-hidden">Multi-handle constraints</legend>
+        <rangegroup id="constraints-example-3" min="0" max="100">
+            <legend class="visually-hidden">Multi-handle constraints</legend>
             <label class="visually-hidden">Handle 1 <input type="range" value="15" /></label>
             <label class="visually-hidden">
                 Handle 2 (constrained)
                 <input type="range" value="40" min="30" max="70" />
             </label>
             <label class="visually-hidden">Handle 3 <input type="range" value="85" /></label>
-        </range-group>
+        </rangegroup>
     </div>
     <ExampleCodeBlock slot="code">
         <CodeSnippet
@@ -59,16 +47,10 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-/* four-segment track, one band per zone */
-rangegroup::slider-segment(1) { background-color: #3949ab; }
-rangegroup::slider-segment(2) { background-color: #f97316; }
-rangegroup::slider-segment(3) { background-color: #eab308; }
+rangegroup::slider-segment(1),
 rangegroup::slider-segment(4) { background-color: #3949ab; }
-
-/* match each thumb to its leading segment */
-rangegroup::slider-thumb(1) { background-color: #3949ab; }
-rangegroup::slider-thumb(2) { background-color: #f97316; }
-rangegroup::slider-thumb(3) { background-color: #eab308; }
+rangegroup::slider-segment(2) { background-color: var(--color-orange); }
+rangegroup::slider-segment(3) { background-color: var(--color-yellow); }
 `}
         />
     </ExampleCodeBlock>

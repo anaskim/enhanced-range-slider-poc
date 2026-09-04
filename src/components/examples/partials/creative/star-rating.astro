@@ -6,9 +6,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
 
 <ExampleSection id="star-rating" eyebrow="Creative styling" title="Star rating filter">
     <Fragment slot="description">
-        A two-thumb 1&ndash;5 star rating filter. The five stars below the track act as labels and snap targets via <code
-            >list</code
-        > &mdash; stars inside the selected range fill in gold, the rest stay hollow.
+        A two-thumb 1&ndash;5 star rating filter. The five stars below the track act as labels for discrete snap
+        positions &mdash; stars inside the selected range fill in gold, the rest stay hollow.
     </Fragment>
     <div slot="demo" class="star-rating-card">
         <style is:global>
@@ -21,20 +20,16 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 --thumb-size: 26px;
                 --track-height: 4px;
             }
-            #star-rating-range::part(slider-track) {
+            #star-rating-range::slider-track {
                 background: var(--star-empty);
-                border-radius: 999px;
             }
-            #star-rating-range::part(slider-segment-2) {
+            #star-rating-range::slider-segment {
+                background: var(--star-empty);
+            }
+            #star-rating-range::slider-segment(2) {
                 background: var(--star-gold);
             }
-            #star-rating-range::part(slider-tick) {
-                display: none;
-            }
-            #star-rating-range::part(slider-tick-label) {
-                display: none;
-            }
-            #star-rating-range::part(slider-thumb) {
+            #star-rating-range::slider-thumb(*) {
                 background-color: var(--star-gold);
                 background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>");
                 background-position: center;
@@ -98,18 +93,15 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 color: var(--text-muted);
             }
         </style>
-        <range-group id="star-rating-range" min="0" max="100" list="star-rating-ticks" stepbetween="25">
-            <legend slot="legend" class="visually-hidden">Star rating filter</legend>
-            <label class="visually-hidden">Min rating <input type="range" value="50" /></label>
-            <label class="visually-hidden">Max rating <input type="range" value="100" /></label>
-        </range-group>
-        <datalist id="star-rating-ticks">
-            <option value="0"></option>
-            <option value="25"></option>
-            <option value="50"></option>
-            <option value="75"></option>
-            <option value="100"></option>
-        </datalist>
+        <rangegroup id="star-rating-range" min="0" max="100" stepbetween="25">
+            <legend class="visually-hidden">Star rating filter</legend>
+            <label class="visually-hidden"
+                >Min rating <input type="range" min="0" max="100" step="25" value="50" /></label
+            >
+            <label class="visually-hidden"
+                >Max rating <input type="range" min="0" max="100" step="25" value="100" /></label
+            >
+        </rangegroup>
         <div class="star-rating-scale">
             <div id="star-rating-stars" class="star-rating-stars" aria-hidden="true"></div>
             <div class="star-rating-captions" aria-hidden="true">
@@ -128,19 +120,11 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup id="star-rating-range" min="0" max="100" list="star-ticks" stepbetween="25">
+<rangegroup id="star-rating-range" min="0" max="100" stepbetween="25">
   <legend>Star rating range</legend>
-  <label>Min rating <input type="range" value="50"></label>
-  <label>Max rating <input type="range" value="100"></label>
+  <label>Min rating <input type="range" min="0" max="100" step="25" value="50"></label>
+  <label>Max rating <input type="range" min="0" max="100" step="25" value="100"></label>
 </rangegroup>
-
-<datalist id="star-ticks">
-  <option value="0"></option>
-  <option value="25"></option>
-  <option value="50"></option>
-  <option value="75"></option>
-  <option value="100"></option>
-</datalist>
 
 <!-- 5 fixed star icons + caption row, distributed across the track -->
 <div class="star-rating-stars">
@@ -161,19 +145,29 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-rangegroup::slider-track { background: #e9eaee; border-radius: 999px; }
+rangegroup {
+  --thumb-size: 26px;
+  --track-height: 4px;
+}
+rangegroup::slider-track { background: #d6dbe2; border-radius: 999px; }
+rangegroup::slider-segment { background: #d6dbe2; }
 rangegroup::slider-segment(2) { background: #facc15; }
 
 /* round gold thumb with a centred white star */
 rangegroup::slider-thumb(*) {
   background-color: #facc15;
-  background-image: url("...star icon svg...");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>");
+  background-position: center;
+  background-repeat: no-repeat;
   background-size: 60%;
-  border-color: #b78a0d;
+  border-color: color-mix(in oklab, #facc15 75%, black 25%);
+  box-shadow:
+    0 2px 8px rgba(250, 204, 21, .4),
+    inset 0 0 0 1.5px color-mix(in oklab, #facc15 70%, black 20%);
 }
 
 /* stars whose value is within [lo, hi] fill in gold */
-.star-rating-star                       { color: #e9eaee; }
+.star-rating-star                       { color: #d6dbe2; }
 .star-rating-star[data-in-range="true"] { color: #facc15; }
 `}
         />
@@ -186,11 +180,11 @@ const minOut = document.querySelector("#star-rating-min-chip");
 const maxOut = document.querySelector("#star-rating-max-chip");
 const toStars = v => Math.round(v / 25) + 1;   /* 0–100 -> 1–5 stars */
 
-rg.addEventListener("input", () => {
+rg.querySelectorAll('input[type="range"]').forEach(input => input.addEventListener("input", () => {
   const [lo, hi] = rg.values;
   stars.forEach(s => {
     s.dataset.inRange = String(+s.dataset.value >= lo && +s.dataset.value <= hi);
-  });
+  }));
   minOut.textContent = \`\${toStars(lo)} stars\`;
   maxOut.textContent = \`\${toStars(hi)} stars\`;
 });
@@ -206,7 +200,8 @@ rg.addEventListener("input", () => {
                 const maxOut = document.querySelector("#star-rating-max-chip");
                 if (!rg || !starsHost || !minOut || !maxOut) return;
 
-                const STAR_PATH = "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z";
+                const STAR_PATH =
+                    "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z";
                 const starValues = [0, 25, 50, 75, 100];
                 starsHost.innerHTML = starValues
                     .map(
@@ -225,25 +220,15 @@ rg.addEventListener("input", () => {
                     minOut.textContent = `${toStars(lo)} stars`;
                     maxOut.textContent = `${toStars(hi)} stars`;
                 };
-                rg.addEventListener("input", updateStars);
+                rg.querySelectorAll('input[type="range"]').forEach((input) =>
+                    input.addEventListener("input", updateStars),
+                );
                 updateStars();
             };
-
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

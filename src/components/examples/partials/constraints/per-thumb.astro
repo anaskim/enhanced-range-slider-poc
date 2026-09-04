@@ -11,28 +11,21 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #constraints-example-1::part(slider-segment-1),
-            #constraints-example-1::part(slider-segment-3) {
-                background-color: #d8d8de;
-            }
-            #constraints-example-1::part(slider-segment-2) {
+            #constraints-example-1::slider-segment(2) {
                 background-color: var(--color-orange);
             }
-            #constraints-example-1::part(slider-thumb) {
-                --slider-thumb-color: var(--color-orange);
-            }
         </style>
-        <range-group id="constraints-example-1" min="0" max="300">
-            <legend slot="legend" class="visually-hidden">Thumb constraints</legend>
+        <rangegroup id="constraints-example-1" min="0" max="300">
+            <legend class="visually-hidden">Thumb constraints</legend>
             <label class="visually-hidden">
                 Min value with constraint
-                <input type="range" name="c1-min" value="100" min="50" />
+                <input type="range" name="c1-min" value="100" min="50" max="300" />
             </label>
             <label class="visually-hidden">
                 Max value with constraint
-                <input type="range" name="c1-max" value="200" max="250" />
+                <input type="range" name="c1-max" value="200" min="0" max="250" />
             </label>
-        </range-group>
+        </rangegroup>
     </div>
     <ExampleCodeBlock slot="code">
         <CodeSnippet
@@ -40,23 +33,16 @@ import CodeSnippet from "../../CodeSnippet.astro";
             code={`
 <rangegroup min="0" max="300">
   <legend>Thumb constraints</legend>
-  <label>Min <input type="range" value="100" min="50"></label>
-  <label>Max <input type="range" value="200" max="250"></label>
+  <label>Min <input type="range" value="100" min="50" max="300"></label>
+  <label>Max <input type="range" value="200" min="0" max="250"></label>
 </rangegroup>
 `}
         />
         <CodeSnippet
             lang="css"
             code={`
-rangegroup::slider-segment(1),
-rangegroup::slider-segment(3) {
-  background-color: #d8d8de;        /* out-of-bounds rails */
-}
 rangegroup::slider-segment(2) {
-  background-color: #f97316;        /* active range */
-}
-rangegroup::slider-thumb(*) {
-  background-color: #f97316;
+  background-color: var(--color-orange);
 }
 `}
         />

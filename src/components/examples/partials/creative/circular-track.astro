@@ -4,13 +4,19 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="circular-track" eyebrow="Creative styling" title="Circular track shape">
+<ExampleSection id="circular-track" eyebrow="Creative styling" title="Circular track shape" status="gap">
     <Fragment slot="description">
-        A two-thumb circular range dial, built entirely with opt-in CSS. Thumbs orbit the ring via <code>offset-path</code> +
-        <code>offset-distance: var(--thumb-left)</code>, and the filled arc is a <code>conic-gradient</code> driven by the
-        segment&rsquo;s exposed <code>--segment-left</code> / <code>--segment-width</code>. A tiny opt-in script maps pointer
-        movement to angle so dragging feels truly circular. The value chips are purely presentational and intentionally omitted
-        from the code sample. The component itself is unchanged.
+        A two-thumb circular range dial, built entirely with opt-in CSS. Thumbs orbit the ring via <code
+            >offset-path</code
+        >
+        + <code>offset-distance</code>, and the filled arc is a <code>conic-gradient</code> driven by the segment&rsquo;s
+        exposed geometry. A tiny opt-in script maps pointer movement to angle so dragging feels truly circular. The value
+        chips are purely presentational and intentionally omitted from the code sample.
+    </Fragment>
+    <Fragment slot="disclosure">
+        Fixed-origin, counterclockwise movement is an inferred demo policy, not settled rangegroup behavior. The
+        authored angle adapter moves only the second input and clamps rather than wrapping. Native path hit testing,
+        event dispatch, keyboard direction, accessibility orientation, and the shared 0%/100% seam remain unresolved.
     </Fragment>
     <div slot="demo" class="circular-card">
         <style is:global>
@@ -20,76 +26,82 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 gap: 1.25rem;
             }
             #circular-range {
-                --thumb-size: 24px;
                 --ring: 18px;
                 --circ-accent: #0a84ff;
+                position: relative;
                 inline-size: 240px;
                 block-size: 240px;
-                padding-block: 0;
+                padding: 0;
             }
-            /* Base ring */
-            #circular-range::part(slider-track) {
-                top: 0 !important;
-                left: 0 !important;
-                inline-size: 240px !important;
-                block-size: 240px !important;
-                transform: none !important;
-                border-radius: 50% !important;
-                background: var(--surface, #e5e7eb) !important;
-                box-shadow: none !important;
-                -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - var(--ring)), #000 0) !important;
-                mask: radial-gradient(farthest-side, #0000 calc(100% - var(--ring)), #000 0) !important;
+            #circular-range::slider-track {
+                inline-size: 240px;
+                block-size: 240px;
+                border-radius: 50%;
+                background:
+                    radial-gradient(farthest-side, var(--surface-soft) calc(100% - var(--ring)), transparent 0),
+                    var(--border-strong);
+                box-shadow: none;
             }
-            /* Segments are flat bars by default — neutralize, then paint only the
-               between-thumbs fill (segment 2) as a conic arc. */
-            #circular-range::part(slider-segment) {
-                background: transparent !important;
+            #circular-range::slider-segment {
+                inset: 0;
+                inline-size: 240px;
+                block-size: 240px;
+                border-radius: 50%;
+                background: transparent;
+                pointer-events: none;
             }
-            #circular-range::part(slider-segment-2) {
-                top: 0 !important;
-                left: 0 !important;
-                inline-size: 240px !important;
-                block-size: 240px !important;
-                border-radius: 50% !important;
+            #circular-range::slider-segment(2) {
                 background: conic-gradient(
                     from 0deg,
-                    #0000 0 var(--segment-left),
-                    var(--circ-accent) var(--segment-left)
-                        calc(var(--segment-left) + var(--segment-width)),
-                    #0000 calc(var(--segment-left) + var(--segment-width)) 100%
-                ) !important;
-                -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - var(--ring)), #000 0) !important;
-                mask: radial-gradient(farthest-side, #0000 calc(100% - var(--ring)), #000 0) !important;
+                    transparent 0
+                        calc(100% - var(--_blink-rangegroup-prototype-segment-size, var(--circular-segment-size, 75%))),
+                    var(--circ-accent)
+                        calc(100% - var(--_blink-rangegroup-prototype-segment-size, var(--circular-segment-size, 75%)))
+                        100%
+                );
+                mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring)), #000 0);
             }
-            /* Orbit each thumb around the ring */
-            #circular-range::part(slider-thumb) {
-                inset: 0 !important;
-                transform: none !important;
-                offset-path: path("M120,9 A111,111 0 1 1 119.99,9");
-                offset-distance: var(--thumb-left);
+            #circular-range::slider-thumb(*) {
+                inset: 0;
+                inline-size: 24px;
+                block-size: 24px;
+                margin: 0;
+                padding: 0;
+                offset-path: path("M120,9 A111,111 0 0 0 120,231 A111,111 0 0 0 120,9");
+                offset-distance: var(--_blink-rangegroup-prototype-thumb-position, var(--circular-position));
+                offset-anchor: center;
                 offset-rotate: 0deg;
-                background: white;
                 border: 3px solid var(--circ-accent);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+                border-radius: 50%;
+                background: white;
+                box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
             }
-            #circular-range::part(slider-thumb):hover {
-                transform: scale(1.12) !important;
+            #circular-range::slider-thumb(1) {
+                --circular-position: var(--circular-thumb-1-position, 0%);
+                opacity: 1;
+            }
+            #circular-range::slider-thumb(2) {
+                --circular-position: var(--circular-thumb-2-position, 75%);
+            }
+            #circular-range::slider-thumb(*):hover {
+                box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
+                transform: scale(1.12);
             }
             .circular-readout {
                 display: flex;
                 gap: 8px;
                 align-items: center;
-                font-size: 0.9rem;
                 color: var(--text-muted);
+                font-size: 0.9rem;
             }
         </style>
-        <range-group id="circular-range" min="0" max="100" stepbetween="5">
-            <legend slot="legend" class="visually-hidden">Circular range dial</legend>
-            <label class="visually-hidden">Start <input type="range" value="25" /></label>
+        <rangegroup id="circular-range" min="0" max="100" stepbetween="5">
+            <legend class="visually-hidden">Circular range</legend>
+            <label class="visually-hidden">Fixed start <input type="range" value="0" disabled /></label>
             <label class="visually-hidden">End <input type="range" value="75" /></label>
-        </range-group>
-        <div class="circular-readout" aria-hidden="true">
-            <span class="value-chip" id="circ-start">25</span>
+        </rangegroup>
+        <div class="circular-readout" aria-live="polite">
+            <span class="value-chip" id="circ-start">0</span>
             <span>to</span>
             <span class="value-chip" id="circ-end">75</span>
         </div>
@@ -99,8 +111,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
             lang="html"
             code={`
 <rangegroup id="circular-range" min="0" max="100" stepbetween="5">
-  <label>Start <input type="range" value="25"></label>
-  <label>End   <input type="range" value="75"></label>
+  <label>Fixed start <input type="range" value="0" disabled></label>
+  <label>End <input type="range" value="75"></label>
 </rangegroup>
 `}
         />
@@ -108,248 +120,223 @@ import CodeSnippet from "../../CodeSnippet.astro";
             lang="css"
             code={`
 rangegroup {
-  appearance: base;
   inline-size: 240px;
   block-size: 240px;
 }
-
-/* Ring track */
 rangegroup::slider-track {
+  inline-size: 240px;
+  block-size: 240px;
   border-radius: 50%;
-  background: #e5e7eb;
-  mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
+  background:
+    radial-gradient(
+      farthest-side,
+      var(--surface-soft) calc(100% - 18px),
+      transparent 0
+    ),
+    #c7cbd4;
 }
-
-/* The fill segment between the two thumbs becomes a conic arc.
-   --segment-left / --segment-width are the segment's 0%..100% bounds. */
 rangegroup::slider-segment(2) {
-  border-radius: 50%;
-  background: conic-gradient(from 0deg,
-    #0000 0 var(--segment-left),
-    var(--circ-accent) var(--segment-left) calc(var(--segment-left) + var(--segment-width)),
-    #0000 calc(var(--segment-left) + var(--segment-width)) 100%);
-  mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
+  inset: 0;
+  inline-size: 240px;
+  block-size: 240px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0
+      calc(
+        100% - var(
+          --_blink-rangegroup-prototype-segment-size,
+          var(--circular-segment-size, 75%)
+        )
+      ),
+    #0a84ff
+      calc(
+        100% - var(
+          --_blink-rangegroup-prototype-segment-size,
+          var(--circular-segment-size, 75%)
+        )
+      )
+      100%
+  );
+  mask: radial-gradient(farthest-side, transparent calc(100% - 18px), #000 0);
 }
-
-/* Orbit the thumbs around the ring */
-rangegroup::slider-thumb {
-  offset-path: path("M120,9 A111,111 0 1 1 119.99,9");
-  offset-distance: var(--slider-thumb-position);
+rangegroup::slider-thumb(*) {
+  inset: 0;
+  margin: 0;
+  offset-path: path("M120,9 A111,111 0 0 0 120,231 A111,111 0 0 0 120,9");
+  offset-distance:
+    var(--_blink-rangegroup-prototype-thumb-position, var(--circular-position));
+  offset-anchor: center;
+  offset-rotate: 0deg;
+  border: 3px solid #0a84ff;
+  background: white;
+}
+rangegroup::slider-thumb(1) {
+  --circular-position: var(--circular-thumb-1-position, 0%);
+}
+rangegroup::slider-thumb(2) {
+  --circular-position: var(--circular-thumb-2-position, 75%);
 }
 `}
         />
         <CodeSnippet
             lang="javascript"
             code={`
-const rg = document.querySelector("#circular-range");
-let activeIndex = null;
+const group = document.querySelector("#circular-range");
 let activePointerId = null;
 let dragStartProgress = 0;
-let dragAccumulatedAngle = 0;
+let accumulatedAngle = 0;
 let lastAngle = 0;
 
-const getCenter = () => {
-  const r = rg.getBoundingClientRect();
-  return { cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+/* Authored experiment: 0% is 12 o'clock and values increase counterclockwise. */
+const pointerToAngle = event => {
+  const rect = group.getBoundingClientRect();
+  const x = event.clientX - (rect.left + rect.width / 2);
+  const y = event.clientY - (rect.top + rect.height / 2);
+  const clockwise = (Math.atan2(y, x) + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2);
+  return (Math.PI * 2 - clockwise) % (Math.PI * 2);
 };
-const pointerToAngle = (event) => {
-  const { cx, cy } = getCenter();
-  const raw = Math.atan2(event.clientY - cy, event.clientX - cx);
-  return (raw + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2); // 0 at top, clockwise
+const unwrapDelta = (next, previous) => {
+  let delta = next - previous;
+  if (delta > Math.PI) delta -= Math.PI * 2;
+  if (delta < -Math.PI) delta += Math.PI * 2;
+  return delta;
 };
-const angleToProgress = (angle) => angle / (Math.PI * 2);
-const valueToProgress = (value) => {
-  const min = Number(rg.min ?? 0);
-  const max = Number(rg.max ?? 100);
-  return (value - min) / (max - min || 1);
+const update = () => {
+  const [start, end] = group.values;
+  group.style.setProperty("--circular-thumb-1-position", \`\${start}%\`);
+  group.style.setProperty("--circular-thumb-2-position", \`\${end}%\`);
+  group.style.setProperty("--circular-segment-size", \`\${end - start}%\`);
 };
-const clamp01 = (v) => Math.max(0, Math.min(1, v));
-const circularDistance = (a, b) => {
-  const d = Math.abs(a - b);
-  return Math.min(d, 1 - d);
-};
-const closestThumbForProgress = (progress) => {
-  return rg.values.reduce((best, value, index) => {
-    const dist = circularDistance(valueToProgress(value), progress);
-    if (dist < best.dist) return { index, dist };
-    return best;
-  }, { index: 0, dist: Infinity }).index;
-};
-const applyProgress = (index, progress) => {
-  const min = Number(rg.min ?? 0);
-  const max = Number(rg.max ?? 100);
-  rg.setRangeValue(index, min + progress * (max - min));
-};
-const unwrapDelta = (next, prev) => {
-  let d = next - prev;
-  if (d > Math.PI) d -= Math.PI * 2;
-  else if (d < -Math.PI) d += Math.PI * 2;
-  return d;
+const applyProgress = progress => {
+  const clamped = Math.max(0, Math.min(1, progress));
+  group.setRangeValue(1, clamped * 100);
+  update();
 };
 
-rg.addEventListener("pointerdown", (event) => {
-  if (event.button !== 0) return;
+group.addEventListener("pointerdown", event => {
   event.preventDefault();
   event.stopPropagation();
   const angle = pointerToAngle(event);
-  const progress = angleToProgress(angle);
-  activeIndex = closestThumbForProgress(progress);
+  const progress = angle / (Math.PI * 2);
   activePointerId = event.pointerId;
-  rg.setPointerCapture(event.pointerId);
-  applyProgress(activeIndex, progress);
-  dragStartProgress = valueToProgress(rg.values[activeIndex]);
-  dragAccumulatedAngle = 0;
+  group.getRangeInput(1).focus();
+  group.setPointerCapture(event.pointerId);
+  applyProgress(progress);
+  dragStartProgress = group.values[1] / 100;
+  accumulatedAngle = 0;
   lastAngle = angle;
-}, { capture: true, passive: false });
+}, { capture: true });
 
-window.addEventListener("pointermove", (event) => {
-  if (activeIndex === null || event.pointerId !== activePointerId) return;
+group.addEventListener("pointermove", event => {
+  if (event.pointerId !== activePointerId) return;
   event.preventDefault();
   event.stopPropagation();
-  const nextAngle = pointerToAngle(event);
-  dragAccumulatedAngle += unwrapDelta(nextAngle, lastAngle);
-  lastAngle = nextAngle;
-  applyProgress(activeIndex, clamp01(dragStartProgress + dragAccumulatedAngle / (Math.PI * 2)));
-}, { passive: false });
+  const angle = pointerToAngle(event);
+  accumulatedAngle += unwrapDelta(angle, lastAngle);
+  lastAngle = angle;
+  applyProgress(dragStartProgress + accumulatedAngle / (Math.PI * 2));
+}, { capture: true });
 
-window.addEventListener("pointerup", (event) => {
+const finish = event => {
   if (event.pointerId !== activePointerId) return;
-  activeIndex = null;
   activePointerId = null;
-});
+};
+group.addEventListener("pointerup", finish, { capture: true });
+group.addEventListener("pointercancel", finish, { capture: true });
+update();
 `}
         />
     </ExampleCodeBlock>
     <script is:inline slot="runtime">
         (() => {
             const init = () => {
-                const rg = document.querySelector("#circular-range");
-                if (!rg) return;
+                const group = document.querySelector("#circular-range");
+                const startOutput = document.querySelector("#circ-start");
+                const endOutput = document.querySelector("#circ-end");
+                if (!group || !startOutput || !endOutput) return;
 
-                let activeIndex = null;
                 let activePointerId = null;
                 let dragStartProgress = 0;
                 let dragAccumulatedAngle = 0;
                 let lastAngle = 0;
 
-                const getCenter = () => {
-                    const rect = rg.getBoundingClientRect();
-                    return { cx: rect.left + rect.width / 2, cy: rect.top + rect.height / 2 };
-                };
-
-                // 0 is at the top of the circle; values increase clockwise.
-                const pointerToAngle = (event) => {
-                    const { cx, cy } = getCenter();
-                    const raw = Math.atan2(event.clientY - cy, event.clientX - cx);
-                    return (raw + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2);
-                };
-                const angleToProgress = (angle) => angle / (Math.PI * 2);
-
-                const getMin = () => Number(rg.getAttribute("min") ?? 0);
-                const getMax = () => Number(rg.getAttribute("max") ?? 100);
-
-                const progressToValue = (progress) => {
-                    const min = getMin();
-                    const max = getMax();
-                    return min + progress * (max - min);
-                };
-
-                const valueToProgress = (value) => {
-                    const min = getMin();
-                    const max = getMax();
-                    const span = max - min || 1;
-                    return (value - min) / span;
+                const updateReadout = () => {
+                    const [start, end] = group.values;
+                    group.style.setProperty("--circular-thumb-1-position", `${start}%`);
+                    group.style.setProperty("--circular-thumb-2-position", `${end}%`);
+                    group.style.setProperty("--circular-segment-size", `${end - start}%`);
+                    startOutput.textContent = Math.round(start);
+                    endOutput.textContent = Math.round(end);
                 };
                 const clamp01 = (value) => Math.max(0, Math.min(1, value));
-
-                const circularDistance = (a, b) => {
-                    const d = Math.abs(a - b);
-                    return Math.min(d, 1 - d);
+                const pointerToAngle = (event) => {
+                    const rect = group.getBoundingClientRect();
+                    const x = event.clientX - (rect.left + rect.width / 2);
+                    const y = event.clientY - (rect.top + rect.height / 2);
+                    const clockwise = (Math.atan2(y, x) + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2);
+                    return (Math.PI * 2 - clockwise) % (Math.PI * 2);
                 };
-
-                const closestThumbForProgress = (progress) => {
-                    let bestIndex = 0;
-                    let bestDist = Number.POSITIVE_INFINITY;
-                    rg.values.forEach((value, index) => {
-                        const dist = circularDistance(valueToProgress(value), progress);
-                        if (dist < bestDist) {
-                            bestDist = dist;
-                            bestIndex = index;
-                        }
-                    });
-                    return bestIndex;
-                };
-
-                const applyProgress = (index, progress) => {
-                    rg.setRangeValue(index, progressToValue(progress));
-                };
-                const unwrapDelta = (next, prev) => {
-                    let delta = next - prev;
+                const unwrapDelta = (next, previous) => {
+                    let delta = next - previous;
                     if (delta > Math.PI) delta -= Math.PI * 2;
-                    else if (delta < -Math.PI) delta += Math.PI * 2;
+                    if (delta < -Math.PI) delta += Math.PI * 2;
                     return delta;
                 };
-
+                const applyProgress = (progress) => {
+                    group.setRangeValue(1, clamp01(progress) * 100);
+                    updateReadout();
+                };
                 const handlePointerDown = (event) => {
                     if (event.button !== 0) return;
                     event.preventDefault();
                     event.stopPropagation();
                     const angle = pointerToAngle(event);
-                    const progress = angleToProgress(angle);
-                    activeIndex = closestThumbForProgress(progress);
-                    if (activeIndex < 0) activeIndex = 0;
+                    const progress = angle / (Math.PI * 2);
                     activePointerId = event.pointerId;
-                    rg.setPointerCapture(event.pointerId);
-                    applyProgress(activeIndex, progress);
-                    dragStartProgress = valueToProgress(rg.values[activeIndex]);
+                    group.getRangeInput(1)?.focus();
+                    group.setPointerCapture(event.pointerId);
+                    applyProgress(progress);
+                    dragStartProgress = group.values[1] / 100;
                     dragAccumulatedAngle = 0;
                     lastAngle = angle;
                 };
-
                 const handlePointerMove = (event) => {
-                    if (activeIndex === null || event.pointerId !== activePointerId) return;
+                    if (event.pointerId !== activePointerId) return;
                     event.preventDefault();
                     event.stopPropagation();
                     const nextAngle = pointerToAngle(event);
                     dragAccumulatedAngle += unwrapDelta(nextAngle, lastAngle);
                     lastAngle = nextAngle;
-                    const nextProgress = clamp01(
-                        dragStartProgress + dragAccumulatedAngle / (Math.PI * 2),
-                    );
-                    applyProgress(activeIndex, nextProgress);
+                    applyProgress(dragStartProgress + dragAccumulatedAngle / (Math.PI * 2));
                 };
-
                 const handlePointerUp = (event) => {
                     if (event.pointerId !== activePointerId) return;
-                    activeIndex = null;
+                    if (group.hasPointerCapture(event.pointerId)) {
+                        group.releasePointerCapture(event.pointerId);
+                    }
                     activePointerId = null;
                 };
 
-                rg.addEventListener("pointerdown", handlePointerDown, {
+                group.addEventListener("pointerdown", handlePointerDown, {
                     capture: true,
                     passive: false,
                 });
-                window.addEventListener("pointermove", handlePointerMove, {
+                group.addEventListener("pointermove", handlePointerMove, {
+                    capture: true,
                     passive: false,
                 });
-                window.addEventListener("pointerup", handlePointerUp);
+                group.addEventListener("pointerup", handlePointerUp, { capture: true });
+                group.addEventListener("pointercancel", handlePointerUp, { capture: true });
+                group.addEventListener("lostpointercapture", handlePointerUp, { capture: true });
+                group
+                    .querySelectorAll('input[type="range"]')
+                    .forEach((input) => input.addEventListener("input", updateReadout));
+                updateReadout();
             };
-
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

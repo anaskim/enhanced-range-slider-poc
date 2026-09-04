@@ -1,373 +1,303 @@
-// @ts-nocheck
-import "../range-group.ts";
+type Theme = "system" | "light" | "dark";
 
-            document.addEventListener("DOMContentLoaded", () => {
-                /* --- Theme toggle (system -> light -> dark) --- */
-                const themeToggles = Array.from(document.querySelectorAll("[data-theme-toggle]"));
-                const THEME_STORAGE_KEY = "rangegroup-theme";
-                const themeOrder = ["system", "light", "dark"];
-                const htmlEl = document.documentElement;
+interface PrismApi {
+    highlightElement(element: Element): void;
+}
 
-                const getStoredTheme = () => {
-                    try {
-                        const stored = localStorage.getItem(THEME_STORAGE_KEY);
-                        return themeOrder.includes(stored) ? stored : "system";
-                    } catch {
-                        return "system";
-                    }
-                };
+declare const Prism: PrismApi;
 
-                const prefersDarkMql = window.matchMedia("(prefers-color-scheme: dark)");
+const themeOrder: Theme[] = ["system", "light", "dark"];
+const themeStorageKey = "rangegroup-theme";
 
-                const setThemeClasses = (theme) => {
-                    htmlEl.classList.remove("light", "dark");
-                    if (theme === "light") {
-                        htmlEl.classList.add("light");
-                    } else if (theme === "dark") {
-                        htmlEl.classList.add("dark");
-                    } else {
-                        // System: use the same html.light / html.dark hooks as explicit themes so all
-                        // theme-scoped CSS (TOC active state, anchored pills, etc.) stays consistent.
-                        htmlEl.classList.add(prefersDarkMql.matches ? "dark" : "light");
-                    }
-                };
+function selectorParses(selector: string): boolean {
+    const style = document.createElement("style");
+    style.textContent = `${selector} { color: rgb(1 2 3); }`;
+    document.head.append(style);
+    const parsed = style.sheet?.cssRules.length === 1;
+    style.remove();
+    return parsed;
+}
 
-                const getNextTheme = (theme) => {
-                    const index = themeOrder.indexOf(theme);
-                    return themeOrder[(index + 1) % themeOrder.length];
-                };
+function hasNativePrototype(): boolean {
+    if (typeof window.HTMLRangeGroupElement !== "function") {
+        return false;
+    }
 
-                const syncThemeToggleLabel = (theme) => {
-                    const text = `Theme: ${theme}`;
-                    themeToggles.forEach((toggle) => {
-                        toggle.setAttribute("aria-label", text);
-                        toggle.dataset.theme = theme;
-                    });
-                };
+    const group = document.createElement("rangegroup");
+    return (
+        group instanceof window.HTMLRangeGroupElement &&
+        "values" in group &&
+        "inputs" in group &&
+        selectorParses("rangegroup::slider-track") &&
+        selectorParses("rangegroup::slider-segment") &&
+        selectorParses("rangegroup::slider-thumb(*)")
+    );
+}
 
-                let activeTheme = getStoredTheme();
-                setThemeClasses(activeTheme);
-                syncThemeToggleLabel(activeTheme);
+function initializeTheme(): void {
+    const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]"));
+    const html = document.documentElement;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-                const onSystemColorSchemeChange = () => {
-                    if (activeTheme === "system") {
-                        setThemeClasses(activeTheme);
-                    }
-                };
-                if (typeof prefersDarkMql.addEventListener === "function") {
-                    prefersDarkMql.addEventListener("change", onSystemColorSchemeChange);
-                } else if (typeof prefersDarkMql.addListener === "function") {
-                    prefersDarkMql.addListener(onSystemColorSchemeChange);
+    const getStoredTheme = (): Theme => {
+        try {
+            const stored = localStorage.getItem(themeStorageKey);
+            return themeOrder.includes(stored as Theme) ? (stored as Theme) : "system";
+        } catch {
+            return "system";
+        }
+    };
+
+    const applyTheme = (theme: Theme): void => {
+        html.classList.remove("light", "dark");
+        html.classList.add(theme === "system" ? (prefersDark.matches ? "dark" : "light") : theme);
+        toggles.forEach((toggle) => {
+            toggle.dataset.theme = theme;
+            toggle.setAttribute("aria-label", `Theme: ${theme}`);
+        });
+    };
+
+    let activeTheme = getStoredTheme();
+    applyTheme(activeTheme);
+
+    prefersDark.addEventListener("change", () => {
+        if (activeTheme === "system") {
+            applyTheme(activeTheme);
+        }
+    });
+
+    toggles.forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+            activeTheme = themeOrder[(themeOrder.indexOf(activeTheme) + 1) % themeOrder.length];
+            try {
+                if (activeTheme === "system") {
+                    localStorage.removeItem(themeStorageKey);
+                } else {
+                    localStorage.setItem(themeStorageKey, activeTheme);
                 }
+            } catch {
+                // Theme persistence is optional when storage is unavailable.
+            }
+            applyTheme(activeTheme);
+        });
+    });
+}
 
-                if (themeToggles.length) {
-                    themeToggles.forEach((themeToggle) =>
-                        themeToggle.addEventListener("click", () => {
-                            activeTheme = getNextTheme(activeTheme);
-                            if (activeTheme === "system") {
-                                localStorage.removeItem(THEME_STORAGE_KEY);
-                            } else {
-                                localStorage.setItem(THEME_STORAGE_KEY, activeTheme);
-                            }
-                            setThemeClasses(activeTheme);
-                            syncThemeToggleLabel(activeTheme);
-                        }),
-                    );
-                }
+function initializePrototypeStatus(): void {
+    const ready = hasNativePrototype();
+    const html = document.documentElement;
+    html.classList.toggle("prototype-ready", ready);
+    html.classList.toggle("prototype-fallback", !ready);
 
-                /* --- Progressive Enhancement Toggle --- */
-                const peToggles = Array.from(document.querySelectorAll(".js-pe-toggle"));
-                if (peToggles.length) {
-                    const togglePE = (enabled) => {
-                        if (enabled) {
-                            document.querySelectorAll(".fallback-container").forEach((fallback) => {
-                                const componentId = fallback.dataset.componentId;
-                                const component = document.getElementById(componentId);
-                                if (component) {
-                                    while (fallback.firstChild) {
-                                        component.appendChild(fallback.firstChild);
-                                    }
-                                    component.style.display = "";
-                                }
-                                fallback.remove();
-                            });
-                        } else {
-                            document.querySelectorAll("range-group").forEach((component, index) => {
-                                if (!component.id) {
-                                    component.id = `rg-component-${index}`;
-                                }
-                                if (document.querySelector(`[data-component-id="${component.id}"]`)) return;
+    document.querySelectorAll<HTMLElement>("[data-runtime-status]").forEach((status) => {
+        status.textContent = ready ? "Feature on" : "Fallback mode";
+        status.dataset.state = ready ? "ready" : "fallback";
+    });
+}
 
-                                const fallback = document.createElement("fieldset");
-                                fallback.className = "fallback-container";
-                                fallback.dataset.componentId = component.id;
+function initializeMobileMenu(): void {
+    const menu = document.querySelector<HTMLElement>("#mobile-header-menu");
+    const button = document.querySelector<HTMLButtonElement>(".mobile-menu-button");
+    if (!menu || !button || typeof menu.showPopover !== "function") {
+        return;
+    }
 
-                                while (component.firstChild) {
-                                    fallback.appendChild(component.firstChild);
-                                }
+    document.body.classList.add("has-popover-menu");
+    const syncExpanded = (): void => {
+        button.setAttribute("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
+    };
+    menu.addEventListener("toggle", syncExpanded);
+    syncExpanded();
+}
 
-                                fallback.querySelectorAll("label.visually-hidden").forEach((label) => {
-                                    label.classList.remove("visually-hidden");
-                                    label.classList.add("fallback-label-visible");
-                                });
+function initializeScrollSpy(): void {
+    const desktop = window.matchMedia("(min-width: 961px)");
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>(".sidebar a[href^='#']"));
+    let animationFrame = 0;
 
-                                component.style.display = "none";
-                                component.parentNode.insertBefore(fallback, component);
-                            });
-                        }
-                    };
+    const visibleTargets = (): HTMLElement[] =>
+        links
+            .map((link) => document.querySelector<HTMLElement>(link.hash))
+            .filter((target): target is HTMLElement => Boolean(target));
 
-                    const syncPeToggles = (enabled) => {
-                        peToggles.forEach((toggle) => {
-                            toggle.checked = enabled;
-                        });
-                    };
+    const clearActive = (): void => {
+        links.forEach((link) => link.classList.remove("is-active"));
+    };
 
-                    syncPeToggles(peToggles[0].checked);
+    const update = (): void => {
+        animationFrame = 0;
+        if (!desktop.matches) {
+            clearActive();
+            return;
+        }
 
-                    peToggles.forEach((peToggle) => {
-                        peToggle.addEventListener("change", (e) => {
-                            const enabled = e.target.checked;
-                            syncPeToggles(enabled);
-                            togglePE(enabled);
-                        });
-                    });
-                }
+        const targets = visibleTargets();
+        if (!targets.length) {
+            return;
+        }
 
-                /* --- Mobile popover menu --- */
-                const mobileMenu = document.getElementById("mobile-header-menu");
-                const mobileMenuButton = document.querySelector(".mobile-menu-button");
-                if (mobileMenu && mobileMenuButton && typeof mobileMenu.showPopover === "function") {
-                    document.body.classList.add("has-popover-menu");
-                    const syncExpanded = () => {
-                        mobileMenuButton.setAttribute(
-                            "aria-expanded",
-                            mobileMenu.matches(":popover-open") ? "true" : "false",
-                        );
-                    };
-                    mobileMenu.addEventListener("toggle", syncExpanded);
-                    syncExpanded();
-                }
+        const activationOffset = 92;
+        let active = targets[0];
+        for (const target of targets) {
+            if (target.getBoundingClientRect().top <= activationOffset) {
+                active = target;
+            } else {
+                break;
+            }
+        }
 
-                /* --- Sidebar scroll-spy (desktop only) --- */
-                const tocDesktopMedia = window.matchMedia("(min-width: 961px)");
-                const sidebarLinks = Array.from(document.querySelectorAll(".sidebar a[href^='#']"));
-                const targets = sidebarLinks
-                    .map((link) => document.querySelector(link.getAttribute("href")))
-                    .filter(Boolean);
-                const linkByHash = new Map(sidebarLinks.map((link) => [link.getAttribute("href"), link]));
-                let currentActive = null;
-                let activeCheckRaf = 0;
-                let desktopSpyBound = false;
+        clearActive();
+        document
+            .querySelector<HTMLAnchorElement>(`.sidebar a[href="#${CSS.escape(active.id)}"]`)
+            ?.classList.add("is-active");
+    };
 
-                const clearActiveLinks = () => {
-                    sidebarLinks.forEach((link) => link.classList.remove("is-active"));
-                    currentActive = null;
-                };
+    const queueUpdate = (): void => {
+        if (!animationFrame) {
+            animationFrame = window.requestAnimationFrame(update);
+        }
+    };
 
-                const setActive = (id) => {
-                    if (!id || id === currentActive) return;
-                    currentActive = id;
-                    sidebarLinks.forEach((link) => link.classList.remove("is-active"));
-                    const active = linkByHash.get(`#${id}`);
-                    if (active) {
-                        active.classList.add("is-active");
-                    }
-                };
+    window.addEventListener("scroll", queueUpdate, { passive: true });
+    window.addEventListener("resize", queueUpdate, { passive: true });
+    window.addEventListener("hashchange", queueUpdate);
+    desktop.addEventListener("change", queueUpdate);
+    queueUpdate();
+}
 
-                const computeClosestSection = () => {
-                    const ACTIVATION_OFFSET = 92;
-                    let bestId = targets[0]?.id ?? null;
-                    for (const target of targets) {
-                        const rect = target.getBoundingClientRect();
-                        if (rect.top <= ACTIVATION_OFFSET && rect.bottom > ACTIVATION_OFFSET) {
-                            return target.id;
-                        }
-                    }
-                    for (const target of targets) {
-                        const top = target.getBoundingClientRect().top;
-                        if (top - ACTIVATION_OFFSET <= 0) {
-                            bestId = target.id;
-                        } else {
-                            break;
-                        }
-                    }
-                    return bestId;
-                };
+function dedent(text: string): string {
+    const lines = text.split("\n");
+    while (lines.length && !lines[0].trim()) {
+        lines.shift();
+    }
+    while (lines.length && !lines[lines.length - 1].trim()) {
+        lines.pop();
+    }
+    if (!lines.length) {
+        return "";
+    }
 
-                const updateActiveFromScroll = () => {
-                    activeCheckRaf = 0;
-                    if (!tocDesktopMedia.matches || !targets.length) return;
-                    const bestId = computeClosestSection();
-                    if (bestId) setActive(bestId);
-                };
+    const indent = lines
+        .filter((line) => line.trim())
+        .reduce((minimum, line) => Math.min(minimum, line.match(/^(\s*)/)?.[1].length ?? 0), Infinity);
+    return lines.map((line) => line.slice(indent)).join("\n");
+}
 
-                const queueActiveCheck = () => {
-                    if (activeCheckRaf) return;
-                    activeCheckRaf = window.requestAnimationFrame(updateActiveFromScroll);
-                };
+function highlightPanel(panel: Element): void {
+    panel.querySelectorAll<HTMLElement>('code[class*="language-"]:not(.prism-highlighted)').forEach((code) => {
+        Prism.highlightElement(code);
+        code.classList.add("prism-highlighted");
+    });
+}
 
-                const handleHashChange = () => {
-                    const id = window.location.hash.replace("#", "");
-                    if (id) setActive(id);
-                };
+function initializeCodeBlocks(): void {
+    document.querySelectorAll<HTMLDetailsElement>(".code-block").forEach((details, blockIndex) => {
+        const sources = Array.from(details.querySelectorAll<HTMLScriptElement>('script[type="text/plain"]'));
+        if (!sources.length) {
+            return;
+        }
 
-                const enableDesktopScrollSpy = () => {
-                    if (!tocDesktopMedia.matches || !targets.length || desktopSpyBound) return;
-                    desktopSpyBound = true;
-                    window.addEventListener("scroll", queueActiveCheck, { passive: true });
-                    window.addEventListener("resize", queueActiveCheck, { passive: true });
-                    window.addEventListener("hashchange", handleHashChange);
-                    queueActiveCheck();
-                };
+        const tablist = document.createElement("div");
+        tablist.setAttribute("role", "tablist");
+        tablist.setAttribute("aria-label", "Code example");
+        const panels: HTMLElement[] = [];
 
-                const disableDesktopScrollSpy = () => {
-                    if (desktopSpyBound) {
-                        window.removeEventListener("scroll", queueActiveCheck);
-                        window.removeEventListener("resize", queueActiveCheck);
-                        window.removeEventListener("hashchange", handleHashChange);
-                        desktopSpyBound = false;
-                    }
-                    if (activeCheckRaf) {
-                        window.cancelAnimationFrame(activeCheckRaf);
-                        activeCheckRaf = 0;
-                    }
-                    clearActiveLinks();
-                };
+        sources.forEach((source, sourceIndex) => {
+            const language = source.dataset.lang ?? "text";
+            const languageLabel = { html: "HTML", css: "CSS", javascript: "JS" }[language] ?? language;
+            const tabId = `cb${blockIndex}-tab-${language}`;
+            const panelId = `cb${blockIndex}-panel-${language}`;
 
-                const syncScrollSpyForViewport = () => {
-                    if (tocDesktopMedia.matches) {
-                        enableDesktopScrollSpy();
-                    } else {
-                        disableDesktopScrollSpy();
-                    }
-                };
+            const tab = document.createElement("button");
+            tab.type = "button";
+            tab.setAttribute("role", "tab");
+            tab.id = tabId;
+            tab.setAttribute("aria-controls", panelId);
+            tab.setAttribute("aria-selected", sourceIndex === 0 ? "true" : "false");
+            tab.tabIndex = sourceIndex === 0 ? 0 : -1;
+            tab.textContent = languageLabel;
+            tablist.append(tab);
 
-                syncScrollSpyForViewport();
-                if (typeof tocDesktopMedia.addEventListener === "function") {
-                    tocDesktopMedia.addEventListener("change", syncScrollSpyForViewport);
-                } else if (typeof tocDesktopMedia.addListener === "function") {
-                    tocDesktopMedia.addListener(syncScrollSpyForViewport);
-                }
+            const panel = document.createElement("div");
+            panel.setAttribute("role", "tabpanel");
+            panel.id = panelId;
+            panel.setAttribute("aria-labelledby", tabId);
+            panel.hidden = sourceIndex > 0;
 
-                /* --- Code block init (tabs + Prism) --- */
-                initCodeBlocks();
+            const pre = document.createElement("pre");
+            pre.className = `language-${language}`;
+            const code = document.createElement("code");
+            code.className = `language-${language}`;
+            code.textContent = dedent(source.textContent);
+            pre.append(code);
+            panel.append(pre);
+            details.append(panel);
+            panels.push(panel);
+        });
+
+        sources.forEach((source) => source.remove());
+        details.querySelector("summary")?.after(tablist);
+        const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+
+        const selectTab = (selected: HTMLButtonElement): void => {
+            tabs.forEach((tab) => {
+                tab.setAttribute("aria-selected", "false");
+                tab.tabIndex = -1;
+            });
+            panels.forEach((panel) => {
+                panel.hidden = true;
             });
 
-            function dedent(text) {
-                const lines = text.split("\n");
-                while (lines.length && !lines[0].trim()) lines.shift();
-                while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
-                if (!lines.length) return "";
-                const indent = lines
-                    .filter((l) => l.trim())
-                    .reduce((min, l) => Math.min(min, l.match(/^(\s*)/)[1].length), Infinity);
-                return lines.map((l) => l.slice(indent)).join("\n");
+            selected.setAttribute("aria-selected", "true");
+            selected.tabIndex = 0;
+            const panel = details.querySelector<HTMLElement>(
+                `#${CSS.escape(selected.getAttribute("aria-controls") ?? "")}`,
+            );
+            if (panel) {
+                panel.hidden = false;
+                highlightPanel(panel);
             }
+        };
 
-            function highlightPanel(panel) {
-                panel.querySelectorAll('code[class*="language-"]:not(.prism-highlighted)').forEach((code) => {
-                    Prism.highlightElement(code);
-                    code.classList.add("prism-highlighted");
-                });
+        tabs.forEach((tab, tabIndex) => {
+            tab.addEventListener("click", () => selectTab(tab));
+            tab.addEventListener("keydown", (event) => {
+                let nextIndex: number;
+                switch (event.key) {
+                    case "ArrowRight":
+                        nextIndex = (tabIndex + 1) % tabs.length;
+                        break;
+                    case "ArrowLeft":
+                        nextIndex = (tabIndex - 1 + tabs.length) % tabs.length;
+                        break;
+                    case "Home":
+                        nextIndex = 0;
+                        break;
+                    case "End":
+                        nextIndex = tabs.length - 1;
+                        break;
+                    default:
+                        return;
+                }
+                event.preventDefault();
+                selectTab(tabs[nextIndex]);
+                tabs[nextIndex].focus();
+            });
+        });
+
+        details.addEventListener("toggle", () => {
+            const panel = details.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])');
+            if (details.open && panel) {
+                highlightPanel(panel);
             }
+        });
+    });
+}
 
-            function initCodeBlocks() {
-                document.querySelectorAll(".code-block").forEach((details, idx) => {
-                    const sources = details.querySelectorAll('script[type="text/plain"]');
-                    if (sources.length === 0) return;
-
-                    const tablist = document.createElement("div");
-                    tablist.setAttribute("role", "tablist");
-                    tablist.setAttribute("aria-label", "Code example");
-
-                    const panels = [];
-
-                    sources.forEach((source, i) => {
-                        const lang = source.dataset.lang;
-                        const langLabel = { html: "HTML", css: "CSS", javascript: "JS" }[lang] || lang;
-                        const tabId = `cb${idx}-tab-${lang}`;
-                        const panelId = `cb${idx}-panel-${lang}`;
-
-                        const tab = document.createElement("button");
-                        tab.setAttribute("role", "tab");
-                        tab.id = tabId;
-                        tab.setAttribute("aria-controls", panelId);
-                        tab.setAttribute("aria-selected", i === 0 ? "true" : "false");
-                        tab.setAttribute("tabindex", i === 0 ? "0" : "-1");
-                        tab.textContent = langLabel;
-                        tablist.appendChild(tab);
-
-                        const panel = document.createElement("div");
-                        panel.setAttribute("role", "tabpanel");
-                        panel.id = panelId;
-                        panel.setAttribute("aria-labelledby", tabId);
-                        if (i > 0) panel.hidden = true;
-
-                        const pre = document.createElement("pre");
-                        pre.className = `language-${lang}`;
-                        const code = document.createElement("code");
-                        code.className = `language-${lang}`;
-                        code.textContent = dedent(source.textContent);
-                        pre.appendChild(code);
-                        panel.appendChild(pre);
-
-                        details.appendChild(panel);
-                        panels.push(panel);
-                    });
-
-                    sources.forEach((s) => s.remove());
-
-                    const summary = details.querySelector("summary");
-                    summary.after(tablist);
-
-                    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
-
-                    function selectTab(selectedTab) {
-                        tabs.forEach((t) => {
-                            t.setAttribute("aria-selected", "false");
-                            t.setAttribute("tabindex", "-1");
-                        });
-                        panels.forEach((p) => (p.hidden = true));
-                        selectedTab.setAttribute("aria-selected", "true");
-                        selectedTab.setAttribute("tabindex", "0");
-                        const panelEl = details.querySelector(`#${selectedTab.getAttribute("aria-controls")}`);
-                        panelEl.hidden = false;
-                        highlightPanel(panelEl);
-                    }
-
-                    tabs.forEach((tab) => {
-                        tab.addEventListener("click", () => selectTab(tab));
-                        tab.addEventListener("keydown", (e) => {
-                            const i = tabs.indexOf(tab);
-                            let next;
-                            switch (e.key) {
-                                case "ArrowRight":
-                                    next = (i + 1) % tabs.length;
-                                    break;
-                                case "ArrowLeft":
-                                    next = (i - 1 + tabs.length) % tabs.length;
-                                    break;
-                                case "Home":
-                                    next = 0;
-                                    break;
-                                case "End":
-                                    next = tabs.length - 1;
-                                    break;
-                                default:
-                                    return;
-                            }
-                            e.preventDefault();
-                            selectTab(tabs[next]);
-                            tabs[next].focus();
-                        });
-                    });
-
-                    details.addEventListener("toggle", () => {
-                        if (details.open) {
-                            const activePanel = details.querySelector('[role="tabpanel"]:not([hidden])');
-                            if (activePanel) highlightPanel(activePanel);
-                        }
-                    });
-                });
-            }
+document.addEventListener("DOMContentLoaded", () => {
+    initializeTheme();
+    initializePrototypeStatus();
+    initializeMobileMenu();
+    initializeScrollSpy();
+    initializeCodeBlocks();
+});
