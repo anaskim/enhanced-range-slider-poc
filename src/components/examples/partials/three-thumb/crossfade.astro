@@ -76,8 +76,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 width: 100%;
                 height: 100%;
                 z-index: 1;
-                color: var(--text-soft);
-                opacity: 0.45;
                 pointer-events: none;
             }
 
@@ -173,36 +171,15 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 border-color: color-mix(in oklab, var(--cf-b) 45%, var(--border));
             }
 
-            #crossfade-range {
-                --thumb-size: 18px;
-                --track-height: 4px;
-            }
-            #crossfade-range::part(slider-track) {
-                background: var(--border);
-            }
-            #crossfade-range::part(slider-segment-1) {
+            #crossfade-range::slider-segment(1) {
                 background: var(--cf-a);
             }
-            #crossfade-range::part(slider-segment-2) {
-                background: linear-gradient(to right, var(--cf-a), var(--cf-weight));
+            #crossfade-range::slider-segment(2),
+            #crossfade-range::slider-segment(3) {
+                background: var(--cf-weight);
             }
-            #crossfade-range::part(slider-segment-3) {
-                background: linear-gradient(to right, var(--cf-weight), var(--cf-b));
-            }
-            #crossfade-range::part(slider-segment-4) {
+            #crossfade-range::slider-segment(4) {
                 background: var(--cf-b);
-            }
-            #crossfade-range::part(slider-thumb-1) {
-                --slider-thumb-color: var(--cf-a);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--cf-a) 55%, white);
-            }
-            #crossfade-range::part(slider-thumb-2) {
-                --slider-thumb-color: var(--cf-weight);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--cf-weight) 55%, white);
-            }
-            #crossfade-range::part(slider-thumb-3) {
-                --slider-thumb-color: var(--cf-b);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--cf-b) 55%, white);
             }
 
             .crossfade-readout {
@@ -328,8 +305,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
             </div>
         </div>
 
-        <range-group id="crossfade-range" min="0" max="100" stepbetween="2">
-            <legend slot="legend" class="visually-hidden">Crossfade overlap editor</legend>
+        <rangegroup id="crossfade-range" min="0" max="100" stepbetween="2">
+            <legend class="visually-hidden">Crossfade overlap editor</legend>
             <label class="visually-hidden">
                 Overlap start (seconds)
                 <input type="range" name="crossfade-start" value="20" />
@@ -342,7 +319,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 Overlap end (seconds)
                 <input type="range" name="crossfade-end" value="78" />
             </label>
-        </range-group>
+        </rangegroup>
 
         <div class="crossfade-readout">
             <div class="crossfade-readout-item" data-role="start">
@@ -377,21 +354,20 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-/* Thumb + segment colors drive the entire crossfade narrative */
+.crossfade-card {
+  --cf-a: #ec4899;
+  --cf-b: #06b6d4;
+  --cf-weight: #6366f1;
+  --start-pct: 20%;
+  --weight-pct: 50%;
+  --end-pct: 78%;
+}
 rangegroup::slider-segment(1) { background: var(--cf-a); }
-rangegroup::slider-segment(2) {
-  background: linear-gradient(to right, var(--cf-a), var(--cf-weight));
-}
-rangegroup::slider-segment(3) {
-  background: linear-gradient(to right, var(--cf-weight), var(--cf-b));
-}
+rangegroup::slider-segment(2),
+rangegroup::slider-segment(3) { background: var(--cf-weight); }
 rangegroup::slider-segment(4) { background: var(--cf-b); }
 
-rangegroup::slider-thumb(1) { background: var(--cf-a); }
-rangegroup::slider-thumb(2) { background: var(--cf-weight); }
-rangegroup::slider-thumb(3) { background: var(--cf-b); }
-
-/* Track-A volume fades from full at "start" to 0 at "end" */
+/* The audio tracks remain non-interactive authored output. */
 .crossfade-track-a .crossfade-track-fill {
   background: linear-gradient(to right,
     var(--cf-a) 0%,
@@ -399,6 +375,16 @@ rangegroup::slider-thumb(3) { background: var(--cf-b); }
     transparent var(--end-pct),
     transparent 100%);
 }
+.crossfade-track-b .crossfade-track-fill {
+  background: linear-gradient(to right,
+    transparent 0%,
+    transparent var(--start-pct),
+    var(--cf-b) var(--end-pct),
+    var(--cf-b) 100%);
+}
+.crossfade-guide-start { left: var(--start-pct); background: var(--cf-a); }
+.crossfade-guide-weight { left: var(--weight-pct); background: var(--cf-weight); }
+.crossfade-guide-end { left: var(--end-pct); background: var(--cf-b); }
 `}
         />
         <CodeSnippet
@@ -438,7 +424,9 @@ const update = () => {
   guideEnd.textContent = fmt(end);
 };
 
-rg.addEventListener("input", update);
+rg.querySelectorAll('input[type="range"]').forEach((input) => {
+  input.addEventListener("input", update);
+});
 update();
 `}
         />
@@ -467,7 +455,8 @@ update();
                     !guideStart ||
                     !guideWeight ||
                     !guideEnd
-                ) return;
+                )
+                    return;
 
                 crossfadeRoot.querySelectorAll("[data-cf-wave]").forEach((svg) => {
                     const isA = svg.dataset.cfWave === "a";
@@ -513,25 +502,16 @@ update();
                     guideEnd.textContent = fmt(end);
                 };
 
-                rg.addEventListener("input", update);
+                rg.querySelectorAll('input[type="range"]').forEach((input) => {
+                    input.addEventListener("input", update);
+                });
                 update();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

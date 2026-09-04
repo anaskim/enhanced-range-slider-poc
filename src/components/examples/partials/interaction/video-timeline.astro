@@ -4,11 +4,17 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="video-timeline" eyebrow="Interaction modes" title="Video timeline trim">
+<ExampleSection id="video-timeline" eyebrow="Interaction modes" title="Video timeline trim" status="partial">
     <Fragment slot="description">
-        Drag the selected clip to slide in and out together while keeping duration. The in/out
-        handles still trim each end. <code>interaction="range"</code> is a working name pending
-        bikeshed on <a href="https://github.com/openui/open-ui/issues/1460">#1460</a>.
+        Drag the selected clip to slide in and out together while keeping duration. The in/out handles still trim each
+        end. <code>interaction="range"</code> is a working name pending bikeshed on
+        <a href="https://github.com/openui/open-ui/issues/1460">#1460</a>.
+    </Fragment>
+    <Fragment slot="disclosure">
+        A video timeline combines interactions that may compete for the same surface: trimming an endpoint, moving the
+        selected clip, and seeking or scrubbing the playhead. The platform design must define which regions initiate
+        each action, whether whole-clip movement is opt-in, and how keyboard and accessibility users move the interval
+        as one object.
     </Fragment>
     <div slot="demo" class="video-timeline-card">
         <style is:global>
@@ -43,18 +49,10 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 height: 36px;
                 border-radius: 6px 6px 0 0;
                 background:
-                    repeating-linear-gradient(
-                        to right,
-                        var(--vt-sprocket) 0 6px,
-                        transparent 6px 14px
-                    )
-                    0 0 / 100% 5px no-repeat,
-                    repeating-linear-gradient(
-                        to right,
-                        var(--vt-sprocket) 0 6px,
-                        transparent 6px 14px
-                    )
-                    0 100% / 100% 5px no-repeat,
+                    repeating-linear-gradient(to right, var(--vt-sprocket) 0 6px, transparent 6px 14px) 0 0 / 100% 5px
+                        no-repeat,
+                    repeating-linear-gradient(to right, var(--vt-sprocket) 0 6px, transparent 6px 14px) 0 100% / 100%
+                        5px no-repeat,
                     repeating-linear-gradient(
                         to right,
                         #2a3140 0 28px,
@@ -100,19 +98,22 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 border-top: 7px solid #fff;
             }
             #video-timeline-range {
-                --thumb-size: 28px;
                 --track-height: 6px;
+                --thumb-inline-size: 12px;
+                --thumb-block-size: 32px;
                 margin-top: -2px;
             }
-            #video-timeline-range::part(slider-track) {
+            #video-timeline-range::slider-track {
                 background: var(--vt-sprocket);
             }
-            #video-timeline-range::part(slider-segment-2) {
-                background: var(--vt-accent);
+            #video-timeline-range::slider-segment {
+                background: #d8d8de;
             }
-            #video-timeline-range::part(slider-thumb) {
-                width: 12px;
-                height: 32px;
+            #video-timeline-range::slider-segment(2) {
+                background: var(--vt-accent);
+                cursor: grab;
+            }
+            #video-timeline-range::slider-thumb(*) {
                 border-radius: 3px;
                 background-color: white;
                 border: 2px solid var(--vt-accent);
@@ -141,17 +142,17 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 preserveAspectRatio="none"
                 aria-hidden="true"></svg>
             <div class="video-timeline-playhead" id="video-timeline-playhead" hidden></div>
-            <range-group id="video-timeline-range" min="0" max="180" stepbetween="1" interaction="range">
-                <legend slot="legend" class="visually-hidden">Clip in and out</legend>
+            <rangegroup id="video-timeline-range" min="0" max="180" stepbetween="1">
+                <legend class="visually-hidden">Clip in and out</legend>
                 <label class="visually-hidden">
                     In
-                    <input type="range" name="video-in" value="24" />
+                    <input type="range" name="video-in" min="0" max="180" value="24" />
                 </label>
                 <label class="visually-hidden">
                     Out
-                    <input type="range" name="video-out" value="84" />
+                    <input type="range" name="video-out" min="0" max="180" value="84" />
                 </label>
-            </range-group>
+            </rangegroup>
         </div>
         <p class="video-timeline-readout" id="video-timeline-readout"></p>
     </div>
@@ -159,26 +160,102 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup min="0" max="180" stepbetween="1" interaction="range">
+<rangegroup min="0" max="180" stepbetween="1">
+  <!-- Interior segment dragging is currently an internal prototype behavior.
+       A public whole-clip interaction mode remains unresolved. -->
   <legend>Clip in and out</legend>
-  <label>In  <input type="range" name="video-in" value="24"></label>
-  <label>Out <input type="range" name="video-out" value="84"></label>
+  <label>In  <input type="range" name="video-in" min="0" max="180" value="24"></label>
+  <label>Out <input type="range" name="video-out" min="0" max="180" value="84"></label>
 </rangegroup>
+`}
+        />
+        <CodeSnippet
+            lang="css"
+            code={`
+.video-timeline-card {
+  --vt-accent: #f43f5e;
+  --vt-film: #1a1d24;
+  --vt-sprocket: #3a404c;
+  --vt-wave: #5b6474;
+  --vt-wave-on: #f43f5e;
+}
+.video-timeline-filmstrip {
+  height: 36px;
+  border-radius: 6px 6px 0 0;
+  background:
+    repeating-linear-gradient(to right, var(--vt-sprocket) 0 6px, transparent 6px 14px)
+      0 0 / 100% 5px no-repeat,
+    repeating-linear-gradient(to right, var(--vt-sprocket) 0 6px, transparent 6px 14px)
+      0 100% / 100% 5px no-repeat,
+    repeating-linear-gradient(
+      to right,
+      #2a3140 0 28px,
+      #353c4a 28px 56px,
+      #2f3644 56px 84px,
+      #3a4252 84px 112px
+    );
+  background-color: var(--vt-film);
+}
+.video-timeline-wave {
+  background: color-mix(in oklab, var(--vt-film) 88%, var(--surface));
+}
+.video-timeline-wave rect { fill: var(--vt-wave); }
+.video-timeline-wave rect[data-in-range="true"] { fill: var(--vt-wave-on); }
+.video-timeline-playhead {
+  position: absolute;
+  inset-block: 0;
+  width: 2px;
+  background: white;
+}
+
+rangegroup {
+  --track-height: 6px;
+  --thumb-inline-size: 12px;
+  --thumb-block-size: 32px;
+}
+rangegroup::slider-track {
+  block-size: 6px;
+  background: var(--vt-sprocket);
+}
+rangegroup::slider-segment { background: #d8d8de; }
+rangegroup::slider-segment(2) {
+  background: var(--vt-accent);
+  cursor: grab;
+}
+rangegroup::slider-thumb(*) {
+  inline-size: 12px;
+  block-size: 32px;
+  border: 2px solid var(--vt-accent);
+  border-radius: 3px;
+  background-color: white;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 32'><line x1='4.5' y1='10' x2='4.5' y2='22' stroke='%23f43f5e' stroke-width='1.4' stroke-linecap='round'/><line x1='7.5' y1='10' x2='7.5' y2='22' stroke='%23f43f5e' stroke-width='1.4' stroke-linecap='round'/></svg>");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: 0 2px 6px rgba(244, 63, 94, .28);
+}
 `}
         />
         <CodeSnippet
             lang="javascript"
             code={`
 const rg = document.querySelector("#video-timeline-range");
+const readout = document.querySelector("#video-timeline-readout");
+const bars = document.querySelectorAll("#video-timeline-wave rect");
 const format = (s) => {
   const m = Math.floor(s / 60);
   return \`\${m}:\${String(Math.round(s % 60)).padStart(2, "0")}\`;
 };
-rg.valueTextFormatter = format;
-rg.addEventListener("input", () => {
-  const [a, b] = rg.values;
-  readout.textContent = \`In \${format(a)} · Out \${format(b)} · Duration \${format(b - a)}\`;
-});
+for (const input of rg.querySelectorAll('input[type="range"]')) {
+  input.addEventListener("input", () => {
+    const [a, b] = rg.values;
+    bars.forEach((bar, i) => {
+      const time = ((i + .5) / bars.length) * 180;
+      bar.dataset.inRange = String(time >= a && time <= b);
+    });
+    readout.textContent = \`In \${format(a)} · Out \${format(b)} · Duration \${format(b - a)}\`;
+  });
+}
 `}
         />
     </ExampleCodeBlock>
@@ -197,8 +274,6 @@ rg.addEventListener("input", () => {
                     const s = Math.round(seconds % 60);
                     return `${m}:${String(s).padStart(2, "0")}`;
                 };
-
-                rg.valueTextFormatter = format;
 
                 const BAR_COUNT = 90;
                 const heights = Array.from({ length: BAR_COUNT }, (_, i) => {
@@ -288,31 +363,22 @@ rg.addEventListener("input", () => {
                     else play();
                 });
 
-                rg.addEventListener("input", () => {
-                    syncReadout();
-                    if (!playing) return;
-                    const [lo, hi] = rg.values;
-                    if (playheadTime < lo || playheadTime >= hi) setPlayhead(lo);
+                rg.querySelectorAll('input[type="range"]').forEach((input) => {
+                    input.addEventListener("input", () => {
+                        syncReadout();
+                        if (!playing) return;
+                        const [lo, hi] = rg.values;
+                        if (playheadTime < lo || playheadTime >= hi) setPlayhead(lo);
+                    });
                 });
 
                 syncReadout();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

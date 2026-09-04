@@ -4,46 +4,50 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="classic" eyebrow="Creative styling" title="Classic OS look">
+<ExampleSection id="classic" eyebrow="Creative styling" title="Classic OS look" status="partial">
     <Fragment slot="description">
         Heavy custom styling on all parts to recreate a classic Win-style slider, with anchored tooltips.
+    </Fragment>
+    <Fragment slot="disclosure">
+        The prototype supports anchoring authored elements to its indexed thumb proxies. The remaining gap is defining
+        and testing that contract as a web-platform feature; JavaScript is still needed to copy each input value into
+        its pill.
     </Fragment>
     <div slot="demo" style="position: relative">
         <style is:global>
             #classic-range {
                 --track-height: 4px;
-                --thumb-size: 24px;
+                --thumb-inline-size: 14px;
+                --thumb-block-size: 24px;
             }
-            #classic-range::part(slider-track) {
+            #classic-range::slider-track {
                 background: #444;
                 border: 1px solid #111;
                 border-radius: 0;
                 box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
             }
-            #classic-range::part(slider-segment-2) {
+            #classic-range::slider-segment {
+                background: #d8d8de;
+            }
+            #classic-range::slider-segment(2) {
                 background: #3b82f6;
             }
-            #classic-range::part(slider-thumb) {
-                anchor-name: var(--anchor-name);
+            #classic-range::slider-thumb(*) {
                 background: linear-gradient(to bottom, #f9fafb, #d1d5db);
                 border: 1px solid #6b7280;
                 border-radius: 3px;
-                width: 14px;
-                height: 24px;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
             }
-            #classic-range::part(slider-thumb-1) {
-                --anchor-name: --classic-thumb-1;
+            #classic-range::slider-thumb(1) {
+                anchor-name: --classic-thumb-1;
             }
-            #classic-range::part(slider-thumb-2) {
-                --anchor-name: --classic-thumb-2;
+            #classic-range::slider-thumb(2) {
+                anchor-name: --classic-thumb-2;
             }
-
             .classic-tooltip {
                 position: absolute;
-                position-anchor: var(--anchor-name);
                 position-area: top;
-                translate: -20% -60%;
+                translate: -20% -100%;
                 background: #222;
                 color: white;
                 padding: 2px 8px;
@@ -54,14 +58,14 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 pointer-events: none;
             }
             #classic-tooltip-1 {
-                --anchor-name: --classic-thumb-1;
+                position-anchor: --classic-thumb-1;
             }
             #classic-tooltip-2 {
-                --anchor-name: --classic-thumb-2;
+                position-anchor: --classic-thumb-2;
             }
         </style>
-        <range-group id="classic-range" min="0" max="100">
-            <legend slot="legend" class="visually-hidden">Classic look</legend>
+        <rangegroup id="classic-range" min="0" max="100">
+            <legend class="visually-hidden">Classic look</legend>
             <label class="visually-hidden">
                 Classic Handle 1
                 <input type="range" name="classic-1" value="20" />
@@ -70,7 +74,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 Classic Handle 2
                 <input type="range" name="classic-2" value="80" />
             </label>
-        </range-group>
+        </rangegroup>
         <div id="classic-tooltip-1" class="classic-tooltip" aria-hidden="true">20</div>
         <div id="classic-tooltip-2" class="classic-tooltip" aria-hidden="true">80</div>
     </div>
@@ -90,6 +94,12 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
+rangegroup {
+  --track-height: 4px;
+  --thumb-inline-size: 14px;
+  --thumb-block-size: 24px;
+}
+
 /* recessed track with a bevelled fill */
 rangegroup::slider-track {
   background: #444;
@@ -97,12 +107,13 @@ rangegroup::slider-track {
   border-radius: 0;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
 }
+rangegroup::slider-segment { background: #d8d8de; }
 rangegroup::slider-segment(2) { background: #3b82f6; }
 
 /* tall rectangular thumbs with a grey-to-light gradient */
 rangegroup::slider-thumb(*) {
-  width: 14px;
-  height: 24px;
+  inline-size: 14px;
+  block-size: 24px;
   background: linear-gradient(to bottom, #f9fafb, #d1d5db);
   border: 1px solid #6b7280;
   border-radius: 3px;
@@ -111,11 +122,11 @@ rangegroup::slider-thumb(*) {
 rangegroup::slider-thumb(1) { anchor-name: --classic-thumb-1; }
 rangegroup::slider-thumb(2) { anchor-name: --classic-thumb-2; }
 
-/* black tooltips parked above each thumb */
+/* Authored value pills anchored above the native thumb proxies. */
 .classic-tooltip {
   position: absolute;
   position-area: top;
-  translate: -20% -60%;
+  translate: -20% -100%;
   background: #222;
   color: white;
   padding: 2px 8px;
@@ -135,11 +146,11 @@ const rg = document.querySelector("#classic-range");
 const t1 = document.querySelector("#classic-tooltip-1");
 const t2 = document.querySelector("#classic-tooltip-2");
 
-rg.addEventListener("input", () => {
+rg.querySelectorAll('input[type="range"]').forEach(input => input.addEventListener("input", () => {
   const [a, b] = rg.values;
   t1.textContent = Math.round(a);
   t2.textContent = Math.round(b);
-});
+}));
 `}
         />
     </ExampleCodeBlock>
@@ -150,28 +161,17 @@ rg.addEventListener("input", () => {
                 const t1 = document.querySelector("#classic-tooltip-1");
                 const t2 = document.querySelector("#classic-tooltip-2");
 
-                rg.addEventListener("input", () => {
+                const update = () => {
                     const [a, b] = rg.values;
                     t1.textContent = Math.round(a);
                     t2.textContent = Math.round(b);
-                });
+                };
+                rg.querySelectorAll('input[type="range"]').forEach((input) => input.addEventListener("input", update));
             };
-
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

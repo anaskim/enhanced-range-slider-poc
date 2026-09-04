@@ -7,34 +7,29 @@ import CodeSnippet from "../../CodeSnippet.astro";
 <ExampleSection id="interactive-price" eyebrow="Foundations" title="Interactive price editor">
     <Fragment slot="description">
         Two-way binding between the component values and number inputs is
-        <strong>author JavaScript</strong> — not a native <code>reference</code> API or
-        built-in sibling fields. Linked value fields belong with a general data-binding /
-        invoker discussion
-        (<a href="https://github.com/openui/open-ui/issues/1459">#1459</a>) and must also work
-        for a plain <code>input type=range</code>. Drag the handles to update the fields, or
-        type in the fields to move the handles.
+        <strong>author JavaScript</strong> — not a native <code>reference</code> API or built-in sibling fields. Linked value
+        fields belong with a general data-binding / invoker discussion (<a
+            href="https://github.com/openui/open-ui/issues/1459">#1459</a
+        >) and must also work for a plain <code>input type=range</code>. Drag the handles to update the fields, or type
+        in the fields to move the handles.
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #interactive-price-range::part(slider-segment-2) {
+            #interactive-price-range::slider-segment(2) {
                 background: var(--color-teal);
             }
-            #interactive-price-range::part(slider-thumb) {
-                --slider-thumb-color: var(--color-teal);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--color-teal) 55%, white);
-            }
         </style>
-        <range-group id="interactive-price-range" min="0" max="1000">
-            <legend slot="legend" class="visually-hidden">Interactive price range</legend>
+        <rangegroup id="interactive-price-range" min="0" max="1000">
+            <legend class="visually-hidden">Interactive price range</legend>
             <label class="visually-hidden">
                 Minimum
-                <input type="range" name="price-min" value="250" />
+                <input type="range" name="price-min" min="0" max="1000" value="250" />
             </label>
             <label class="visually-hidden">
                 Maximum
-                <input type="range" name="price-max" value="750" />
+                <input type="range" name="price-max" min="0" max="1000" value="750" />
             </label>
-        </range-group>
+        </rangegroup>
         <div class="price-input-container">
             <div class="price-input-group">
                 <label for="price-min-num-input">Min price</label>
@@ -52,8 +47,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
             code={`
 <rangegroup id="interactive-price-range" min="0" max="1000">
   <legend>Interactive price range</legend>
-  <label>Minimum <input type="range" name="price-min" value="250"></label>
-  <label>Maximum <input type="range" name="price-max" value="750"></label>
+  <label>Minimum <input type="range" name="price-min" min="0" max="1000" value="250"></label>
+  <label>Maximum <input type="range" name="price-max" min="0" max="1000" value="750"></label>
 </rangegroup>
 <label>Min price <input type="number" id="price-min-num-input" min="0" max="1000"></label>
 <label>Max price <input type="number" id="price-max-num-input" min="0" max="1000"></label>
@@ -62,12 +57,9 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-/* selected range segment (between two handles) */
+/* Style the middle segment between the two thumbs. */
 rangegroup::slider-segment(2) {
-  background: #14b8a6;
-}
-rangegroup::slider-thumb(*) {
-  background-color: #14b8a6;
+  background: var(--color-teal);
 }
 `}
         />
@@ -97,7 +89,9 @@ maxInput.addEventListener("input", () => {
   syncInputsToSlider();
 });
 
-rg.addEventListener("input", syncInputsToSlider);
+for (const input of rg.inputs) {
+  input.addEventListener("input", syncInputsToSlider);
+}
 syncInputsToSlider();
 `}
         />
@@ -128,25 +122,16 @@ syncInputsToSlider();
                     syncInputsToSlider();
                 });
 
-                rg.addEventListener("input", syncInputsToSlider);
+                for (const input of rg.inputs) {
+                    input.addEventListener("input", syncInputsToSlider);
+                }
                 syncInputsToSlider();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

@@ -22,9 +22,12 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 padding-top: 60px;
                 padding-inline: 36px;
             }
-            #temp-range {
-                --thumb-size: 22px;
-                --track-height: 8px;
+            .temp-control {
+                position: relative;
+                --temp-zone-1-center: 12.5%;
+                --temp-zone-2-center: 37.5%;
+                --temp-zone-3-center: 62.5%;
+                --temp-zone-4-center: 87.5%;
             }
             .temp-icon {
                 position: absolute;
@@ -41,50 +44,45 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 right: 4px;
                 color: var(--temp-hot);
             }
-            #temp-range::part(slider-segment-1) {
+            #temp-range {
+                --track-height: 8px;
+                --thumb-size: 22px;
+            }
+            #temp-range::slider-segment(1) {
                 background-color: var(--temp-cold);
-                anchor-name: --temp-seg-1;
             }
-            #temp-range::part(slider-segment-2) {
+            #temp-range::slider-segment(2) {
                 background-color: var(--temp-mild);
-                anchor-name: --temp-seg-2;
             }
-            #temp-range::part(slider-segment-3) {
+            #temp-range::slider-segment(3) {
                 background-color: var(--temp-warm);
-                anchor-name: --temp-seg-3;
             }
-            #temp-range::part(slider-segment-4) {
+            #temp-range::slider-segment(4) {
                 background-color: var(--temp-hot);
-                anchor-name: --temp-seg-4;
             }
-            #temp-range::part(slider-thumb) {
+            #temp-range::slider-thumb(*) {
+                border: 1px solid rgb(0 0 0 / 0.18);
                 box-shadow:
                     inset 0 0 0 2px white,
                     0 2px 8px rgba(0, 0, 0, 0.18);
                 background-color: transparent;
                 background-repeat: no-repeat;
             }
-            #temp-range::part(slider-thumb-1) {
-                --slider-thumb-color: var(--temp-cold);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--temp-cold) 40%, white);
+            #temp-range::slider-thumb(1) {
                 background-image: conic-gradient(
                     from 180deg,
                     var(--temp-cold) 0deg 180deg,
                     var(--temp-mild) 180deg 360deg
                 );
             }
-            #temp-range::part(slider-thumb-2) {
-                --slider-thumb-color: var(--temp-mild);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--temp-mild) 40%, white);
+            #temp-range::slider-thumb(2) {
                 background-image: conic-gradient(
                     from 180deg,
                     var(--temp-mild) 0deg 180deg,
                     var(--temp-warm) 180deg 360deg
                 );
             }
-            #temp-range::part(slider-thumb-3) {
-                --slider-thumb-color: var(--temp-warm);
-                --slider-thumb-ring-color: color-mix(in oklab, var(--temp-warm) 40%, white);
+            #temp-range::slider-thumb(3) {
                 background-image: conic-gradient(
                     from 180deg,
                     var(--temp-warm) 0deg 180deg,
@@ -104,28 +102,27 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 border-radius: 999px;
                 pointer-events: none;
                 white-space: nowrap;
-                bottom: anchor(top);
-                left: anchor(center);
-                translate: -50% -10px;
+                bottom: calc(100% + 1px);
+                translate: -50% 0;
                 box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
             }
             .temp-zone-1 {
-                position-anchor: --temp-seg-1;
+                left: var(--temp-zone-1-center);
                 color: var(--temp-cold);
                 border-color: color-mix(in oklab, var(--temp-cold) 35%, var(--border));
             }
             .temp-zone-2 {
-                position-anchor: --temp-seg-2;
+                left: var(--temp-zone-2-center);
                 color: oklch(45% 0.18 180);
                 border-color: color-mix(in oklab, var(--temp-mild) 35%, var(--border));
             }
             .temp-zone-3 {
-                position-anchor: --temp-seg-3;
+                left: var(--temp-zone-3-center);
                 color: oklch(55% 0.18 75);
                 border-color: color-mix(in oklab, var(--temp-warm) 35%, var(--border));
             }
             .temp-zone-4 {
-                position-anchor: --temp-seg-4;
+                left: var(--temp-zone-4-center);
                 color: var(--temp-hot);
                 border-color: color-mix(in oklab, var(--temp-hot) 35%, var(--border));
             }
@@ -197,25 +194,27 @@ import CodeSnippet from "../../CodeSnippet.astro";
                     d="M12 2c.5 4-2.5 5-2.5 8.5C9.5 13 11 14 12 14s2.5-1 2.5-3.5C14.5 7 11.5 6 12 2zM5.5 13c0 4 2.9 7 6.5 7s6.5-3 6.5-7c0-2.4-1.4-3.5-2.6-4.5.4 2.5-1.2 3.5-2.4 3.5-1.6 0-2.5-1-2.5-3 0-1.6.8-3 1.8-4-3.2.3-7.3 3-7.3 8z"
                 ></path>
             </svg>
-            <range-group id="temp-range" min="-100" max="100">
-                <legend slot="legend" class="visually-hidden">Multi-handle temperature</legend>
-                <label class="visually-hidden">
-                    Cold bound
-                    <input type="range" name="temp-cold" value="-50" />
-                </label>
-                <label class="visually-hidden">
-                    Mild bound
-                    <input type="range" name="temp-mild" value="0" />
-                </label>
-                <label class="visually-hidden">
-                    Hot bound
-                    <input type="range" name="temp-hot" value="50" />
-                </label>
-            </range-group>
-            <div class="temp-zone temp-zone-1" aria-hidden="true">Cold</div>
-            <div class="temp-zone temp-zone-2" aria-hidden="true">Mild</div>
-            <div class="temp-zone temp-zone-3" aria-hidden="true">Warm</div>
-            <div class="temp-zone temp-zone-4" aria-hidden="true">Hot</div>
+            <div class="temp-control">
+                <rangegroup id="temp-range" min="-100" max="100">
+                    <legend class="visually-hidden">Multi-handle temperature</legend>
+                    <label class="visually-hidden">
+                        Cold bound
+                        <input type="range" name="temp-cold" min="-100" max="100" value="-50" />
+                    </label>
+                    <label class="visually-hidden">
+                        Mild bound
+                        <input type="range" name="temp-mild" min="-100" max="100" value="0" />
+                    </label>
+                    <label class="visually-hidden">
+                        Hot bound
+                        <input type="range" name="temp-hot" min="-100" max="100" value="50" />
+                    </label>
+                </rangegroup>
+                <div class="temp-zone temp-zone-1" aria-hidden="true">Cold</div>
+                <div class="temp-zone temp-zone-2" aria-hidden="true">Mild</div>
+                <div class="temp-zone temp-zone-3" aria-hidden="true">Warm</div>
+                <div class="temp-zone temp-zone-4" aria-hidden="true">Hot</div>
+            </div>
         </div>
         <div class="temp-readout">
             <div class="temp-readout-cell" data-zone="cold">
@@ -240,21 +239,23 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup id="temp-range" min="-100" max="100">
-  <label>Cold bound <input type="range" value="-50"></label>
-  <label>Mild bound <input type="range" value="0"></label>
-  <label>Hot bound <input type="range" value="50"></label>
-</rangegroup>
-
 <!-- decorative icons framing the track -->
 <svg class="temp-icon-snow"  viewBox="0 0 24 24">...</svg>
 <svg class="temp-icon-flame" viewBox="0 0 24 24">...</svg>
 
-<!-- floating zone labels, anchored per segment -->
-<div class="temp-zone temp-zone-1">Cold</div>
-<div class="temp-zone temp-zone-2">Mild</div>
-<div class="temp-zone temp-zone-3">Warm</div>
-<div class="temp-zone temp-zone-4">Hot</div>
+<div class="temp-control">
+  <rangegroup id="temp-range" min="-100" max="100">
+    <label>Cold bound <input type="range" min="-100" max="100" value="-50"></label>
+    <label>Mild bound <input type="range" min="-100" max="100" value="0"></label>
+    <label>Hot bound <input type="range" min="-100" max="100" value="50"></label>
+  </rangegroup>
+
+  <!-- Labels follow the centers of the indexed native segments. -->
+  <div class="temp-zone temp-zone-1">Cold</div>
+  <div class="temp-zone temp-zone-2">Mild</div>
+  <div class="temp-zone temp-zone-3">Warm</div>
+  <div class="temp-zone temp-zone-4">Hot</div>
+</div>
 
 <div class="temp-readout">
   <div><span>Cold</span><span id="temp-readout-cold">-100° to -50°</span></div>
@@ -267,42 +268,80 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-/* one colour per zone */
-rangegroup::slider-segment(1) { background: #6aa7ff; anchor-name: --temp-seg-1; }
-rangegroup::slider-segment(2) { background: #2dd4bf; anchor-name: --temp-seg-2; }
-rangegroup::slider-segment(3) { background: #fbbf24; anchor-name: --temp-seg-3; }
-rangegroup::slider-segment(4) { background: #fb7185; anchor-name: --temp-seg-4; }
-
-/* each floating label points to its matching segment */
-.temp-zone-1 { position-anchor: --temp-seg-1; }
-.temp-zone-2 { position-anchor: --temp-seg-2; }
-.temp-zone-3 { position-anchor: --temp-seg-3; }
-.temp-zone-4 { position-anchor: --temp-seg-4; }
-.temp-zone-1,
-.temp-zone-2,
-.temp-zone-3,
-.temp-zone-4 {
-  bottom: anchor(top);
-  left: anchor(center);
-  translate: -50% -10px;
+.temp-card {
+  --temp-cold: oklch(65% .25 260);
+  --temp-mild: oklch(70% .2 180);
+  --temp-warm: oklch(80% .2 90);
+  --temp-hot: oklch(65% .25 25);
 }
-
-/* conic-gradient thumbs that bridge neighbouring zones */
+.temp-control {
+  position: relative;
+  --temp-zone-1-center: 12.5%;
+  --temp-zone-2-center: 37.5%;
+  --temp-zone-3-center: 62.5%;
+  --temp-zone-4-center: 87.5%;
+}
+rangegroup {
+  --track-height: 8px;
+  --thumb-size: 22px;
+}
+rangegroup::slider-segment { block-size: 8px; }
+rangegroup::slider-segment(1) { background-color: var(--temp-cold); }
+rangegroup::slider-segment(2) { background-color: var(--temp-mild); }
+rangegroup::slider-segment(3) { background-color: var(--temp-warm); }
+rangegroup::slider-segment(4) { background-color: var(--temp-hot); }
+rangegroup::slider-thumb(*) {
+  inline-size: 22px;
+  block-size: 22px;
+  border: 1px solid rgb(0 0 0 / .18);
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow:
+    inset 0 0 0 2px white,
+    0 2px 8px rgba(0, 0, 0, .18);
+}
 rangegroup::slider-thumb(1) {
-  background: conic-gradient(from 180deg, #6aa7ff 0deg 180deg, #2dd4bf 180deg 360deg);
+  background-image: conic-gradient(
+    from 180deg,
+    var(--temp-cold) 0deg 180deg,
+    var(--temp-mild) 180deg 360deg
+  );
 }
 rangegroup::slider-thumb(2) {
-  background: conic-gradient(from 180deg, #2dd4bf 0deg 180deg, #fbbf24 180deg 360deg);
+  background-image: conic-gradient(
+    from 180deg,
+    var(--temp-mild) 0deg 180deg,
+    var(--temp-warm) 180deg 360deg
+  );
 }
 rangegroup::slider-thumb(3) {
-  background: conic-gradient(from 180deg, #fbbf24 0deg 180deg, #fb7185 180deg 360deg);
+  background-image: conic-gradient(
+    from 180deg,
+    var(--temp-warm) 0deg 180deg,
+    var(--temp-hot) 180deg 360deg
+  );
 }
+
+.temp-zone {
+  position: absolute;
+  bottom: calc(100% + 1px);
+  translate: -50% 0;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: white;
+}
+.temp-zone-1 { left: var(--temp-zone-1-center); color: var(--temp-cold); }
+.temp-zone-2 { left: var(--temp-zone-2-center); color: oklch(45% .18 180); }
+.temp-zone-3 { left: var(--temp-zone-3-center); color: oklch(55% .18 75); }
+.temp-zone-4 { left: var(--temp-zone-4-center); color: var(--temp-hot); }
 `}
         />
         <CodeSnippet
             lang="javascript"
             code={`
 const rg     = document.querySelector("#temp-range");
+const control = document.querySelector(".temp-control");
 const cells  = {
   cold: document.querySelector("#temp-readout-cold"),
   mild: document.querySelector("#temp-readout-mild"),
@@ -310,15 +349,25 @@ const cells  = {
   hot:  document.querySelector("#temp-readout-hot"),
 };
 const fmt = v => \`\${Math.round(v)}°\`;
+const toPercent = value => ((value + 100) / 200) * 100;
 
-rg.valueTextFormatter = fmt;   /* also formats aria-valuetext */
-
-rg.addEventListener("input", () => {
+const update = () => {
   const [t1, t2, t3] = rg.values;
+  const boundaries = [-100, t1, t2, t3, 100];
+  for (let i = 0; i < 4; ++i) {
+    const midpoint = (boundaries[i] + boundaries[i + 1]) / 2;
+    control.style.setProperty(
+      \`--temp-zone-\${i + 1}-center\`,
+      \`\${toPercent(midpoint)}%\`
+    );
+  }
   cells.cold.textContent = \`\${fmt(-100)} to \${fmt(t1)}\`;
   cells.mild.textContent = \`\${fmt(t1)} to \${fmt(t2)}\`;
   cells.warm.textContent = \`\${fmt(t2)} to \${fmt(t3)}\`;
   cells.hot.textContent  = \`\${fmt(t3)} to \${fmt(100)}\`;
+};
+rg.querySelectorAll('input[type="range"]').forEach((input) => {
+  input.addEventListener("input", update);
 });
 `}
         />
@@ -326,41 +375,43 @@ rg.addEventListener("input", () => {
     <script is:inline slot="runtime">
         (() => {
             const init = () => {
-                const rg     = document.querySelector("#temp-range");
-                const cells  = {
-                  cold: document.querySelector("#temp-readout-cold"),
-                  mild: document.querySelector("#temp-readout-mild"),
-                  warm: document.querySelector("#temp-readout-warm"),
-                  hot:  document.querySelector("#temp-readout-hot"),
+                const rg = document.querySelector("#temp-range");
+                const control = document.querySelector(".temp-control");
+                const cells = {
+                    cold: document.querySelector("#temp-readout-cold"),
+                    mild: document.querySelector("#temp-readout-mild"),
+                    warm: document.querySelector("#temp-readout-warm"),
+                    hot: document.querySelector("#temp-readout-hot"),
                 };
-                const fmt = v => `${Math.round(v)}°`;
-                
-                rg.valueTextFormatter = fmt;   /* also formats aria-valuetext */
-                
-                rg.addEventListener("input", () => {
-                  const [t1, t2, t3] = rg.values;
-                  cells.cold.textContent = `${fmt(-100)} to ${fmt(t1)}`;
-                  cells.mild.textContent = `${fmt(t1)} to ${fmt(t2)}`;
-                  cells.warm.textContent = `${fmt(t2)} to ${fmt(t3)}`;
-                  cells.hot.textContent  = `${fmt(t3)} to ${fmt(100)}`;
-                });
-            };
+                const fmt = (v) => `${Math.round(v)}°`;
+                if (!rg || !control || Object.values(cells).some((cell) => !cell)) return;
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
+                const toPercent = (value) => ((value + 100) / 200) * 100;
+
+                const update = () => {
+                    const [t1, t2, t3] = rg.values;
+                    const boundaries = [-100, t1, t2, t3, 100];
+                    for (let i = 0; i < 4; ++i) {
+                        control.style.setProperty(
+                            `--temp-zone-${i + 1}-center`,
+                            `${toPercent((boundaries[i] + boundaries[i + 1]) / 2)}%`,
+                        );
+                    }
+                    cells.cold.textContent = `${fmt(-100)} to ${fmt(t1)}`;
+                    cells.mild.textContent = `${fmt(t1)} to ${fmt(t2)}`;
+                    cells.warm.textContent = `${fmt(t2)} to ${fmt(t3)}`;
+                    cells.hot.textContent = `${fmt(t3)} to ${fmt(100)}`;
+                };
+                rg.querySelectorAll('input[type="range"]').forEach((input) => {
+                    input.addEventListener("input", update);
+                });
+                update();
             };
 
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

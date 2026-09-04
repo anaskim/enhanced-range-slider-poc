@@ -7,11 +7,12 @@ import CodeSnippet from "../../CodeSnippet.astro";
 <ExampleSection id="linked-fields" eyebrow="JavaScript API" title="Linked value fields (author JS)">
     <Fragment slot="description">
         Telecon outcome on
-        <a href="https://github.com/openui/open-ui/issues/1459">#1459</a>: linking a number
-        field to a slider is not a <code>&lt;rangegroup&gt;</code>-only feature and must not
-        be solved by putting number inputs in the group shadow tree. Both demos below use the
-        same author-space <code>input</code> listeners — one against a native range, one
-        against a single-thumb <code>&lt;range-group&gt;</code>.
+        <a href="https://github.com/openui/open-ui/issues/1459">#1459</a>: linking a number field to a slider is not a <code
+            >&lt;rangegroup&gt;</code
+        >-only feature and must not be solved by putting number inputs in the group shadow tree. Both demos below use
+        the same author-space <code>input</code> listeners — one against a native range, one against a single-thumb <code
+            >&lt;rangegroup&gt;</code
+        >.
     </Fragment>
     <div slot="demo">
         <div class="linked-fields-stack">
@@ -29,19 +30,14 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 </div>
             </div>
             <div>
-                <h3>One-thumb <code>&lt;range-group&gt;</code></h3>
-                <style is:global>
-                    #linked-single-range::part(slider-thumb) {
-                        --slider-thumb-color: var(--color-teal);
-                    }
-                </style>
-                <range-group id="linked-single-range" min="0" max="100">
-                    <legend slot="legend" class="visually-hidden">Volume</legend>
+                <h3>One-thumb <code>&lt;rangegroup&gt;</code></h3>
+                <rangegroup id="linked-single-range" min="0" max="100">
+                    <legend class="visually-hidden">Volume</legend>
                     <label class="visually-hidden">
                         Volume
                         <input type="range" name="linked-volume" value="40" />
                     </label>
-                </range-group>
+                </rangegroup>
                 <div class="price-input-container">
                     <div class="price-input-group">
                         <label for="linked-single-number">Value</label>
@@ -75,8 +71,16 @@ number.addEventListener("input", () => { slider.value = number.value; });
 
 const rg = document.querySelector("#linked-single-range");
 const rgNumber = document.querySelector("#linked-single-number");
-rg.addEventListener("input", () => { rgNumber.value = Math.round(rg.values[0]); });
-rgNumber.addEventListener("input", () => { rg.setRangeValue(0, parseInt(rgNumber.value, 10)); });
+const syncGroup = () => { rgNumber.value = String(Math.round(rg.values[0] ?? 0)); };
+const handleRangeEvent = event => {
+  if (event.target instanceof HTMLInputElement && event.target.type === "range") syncGroup();
+};
+rg.addEventListener("input", handleRangeEvent);
+rgNumber.addEventListener("input", () => {
+  rg.setRangeValue(0, parseInt(rgNumber.value, 10) || 0);
+  syncGroup();
+});
+syncGroup();
 `}
         />
     </ExampleCodeBlock>
@@ -100,29 +104,21 @@ rgNumber.addEventListener("input", () => { rg.setRangeValue(0, parseInt(rgNumber
                 const syncGroup = () => {
                     rgNumber.value = String(Math.round(rg.values[0] ?? 0));
                 };
+                const handleRangeEvent = (event) => {
+                    if (event.target instanceof HTMLInputElement && event.target.type === "range") syncGroup();
+                };
+                rg.addEventListener("input", handleRangeEvent);
                 rgNumber.addEventListener("input", () => {
                     rg.setRangeValue(0, parseInt(rgNumber.value, 10) || 0);
                     syncGroup();
                 });
-                rg.addEventListener("input", syncGroup);
                 syncGroup();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

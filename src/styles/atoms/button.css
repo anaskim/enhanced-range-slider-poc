@@ -15,26 +15,22 @@
     transition: background-color 0.15s ease;
 }
 
-.btn-primary,
-.btn-indigo {
+.btn-primary {
     background: var(--accent);
     color: #fff;
 }
 
-.btn-primary:hover,
-.btn-indigo:hover {
+.btn-primary:hover {
     background: var(--accent-deep);
 }
 
-.btn-secondary,
-.btn-pink {
+.btn-secondary {
     background: var(--surface);
     color: var(--text-strong);
     border: 1px solid var(--border-strong);
 }
 
-.btn-secondary:hover,
-.btn-pink:hover {
+.btn-secondary:hover {
     background: var(--s-surface-hover);
 }
 

@@ -7,8 +7,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
 <ExampleSection id="price-histogram" eyebrow="Creative styling" title="Histogram price filter">
     <Fragment slot="description">
         An Airbnb-style price filter. The histogram behind the slider previews item distribution; bars inside the active
-        range light up in the brand accent. Pill thumbs with grip lines carry floating price tags via CSS Anchor
-        Positioning.
+        range light up in the brand accent. Pill thumbs with grip lines pair with floating price tags.
     </Fragment>
     <div slot="demo" class="price-histogram-card">
         <style is:global>
@@ -34,20 +33,21 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 fill: var(--hist-active);
             }
             #price-histogram-range {
-                --thumb-size: 28px;
                 --track-height: 6px;
+                --thumb-inline-size: 16px;
+                --thumb-block-size: 28px;
                 margin-top: -2px;
             }
-            #price-histogram-range::part(slider-track) {
+            #price-histogram-range::slider-track {
                 background: var(--hist-inactive);
-                border-radius: 999px;
             }
-            #price-histogram-range::part(slider-segment-2) {
+            #price-histogram-range::slider-segment {
+                background: var(--hist-inactive);
+            }
+            #price-histogram-range::slider-segment(2) {
                 background: var(--hist-active);
             }
-            #price-histogram-range::part(slider-thumb) {
-                width: 16px;
-                height: 28px;
+            #price-histogram-range::slider-thumb(*) {
                 border-radius: 8px;
                 background-color: white;
                 border: 2px solid var(--hist-active);
@@ -57,14 +57,13 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 background-size: 100% 100%;
                 box-shadow: 0 2px 6px rgba(20, 184, 166, 0.25);
             }
-            #price-histogram-range::part(slider-thumb-1) {
-                anchor-name: --price-hist-1;
-            }
-            #price-histogram-range::part(slider-thumb-2) {
-                anchor-name: --price-hist-2;
+            .price-tag-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.5rem;
             }
             .price-tag {
-                position: absolute;
+                position: relative;
                 background: var(--hist-active);
                 color: white;
                 font-family: "Source Code Pro", "JetBrains Mono", monospace;
@@ -87,18 +86,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 background: var(--hist-active);
                 transform: translateX(-50%) rotate(45deg);
                 border-radius: 1px;
-            }
-            #price-tag-1 {
-                position-anchor: --price-hist-1;
-                bottom: anchor(top);
-                left: anchor(center);
-                translate: -50% -8px;
-            }
-            #price-tag-2 {
-                position-anchor: --price-hist-2;
-                bottom: anchor(top);
-                left: anchor(center);
-                translate: -50% -8px;
             }
             .price-histogram-meta {
                 display: flex;
@@ -142,10 +129,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
                     width: 6px;
                     height: 6px;
                 }
-                #price-tag-1,
-                #price-tag-2 {
-                    translate: -50% -6px;
-                }
                 .price-histogram-meta {
                     margin-top: 1rem;
                     align-items: flex-start;
@@ -179,6 +162,10 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 }
             }
         </style>
+        <div class="price-tag-row" aria-live="polite">
+            <div id="price-tag-1" class="price-tag">$200</div>
+            <div id="price-tag-2" class="price-tag">$780</div>
+        </div>
         <div class="price-histogram-stage">
             <svg
                 id="price-histogram-svg"
@@ -187,13 +174,11 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 preserveAspectRatio="none"
                 aria-hidden="true"></svg>
         </div>
-        <range-group id="price-histogram-range" min="0" max="1000">
-            <legend slot="legend" class="visually-hidden">Price range</legend>
-            <label class="visually-hidden">Min price <input type="range" value="200" /></label>
-            <label class="visually-hidden">Max price <input type="range" value="780" /></label>
-        </range-group>
-        <div id="price-tag-1" class="price-tag" aria-hidden="true">$200</div>
-        <div id="price-tag-2" class="price-tag" aria-hidden="true">$780</div>
+        <rangegroup id="price-histogram-range" min="0" max="1000">
+            <legend class="visually-hidden">Price range</legend>
+            <label class="visually-hidden">Min price <input type="range" min="0" max="1000" value="200" /></label>
+            <label class="visually-hidden">Max price <input type="range" min="0" max="1000" value="780" /></label>
+        </rangegroup>
         <div class="price-histogram-meta">
             <span class="price-histogram-bounds">$0 – $1,000</span>
             <span class="price-histogram-count">
@@ -207,14 +192,14 @@ import CodeSnippet from "../../CodeSnippet.astro";
             code={`
 <rangegroup id="price-histogram-range" min="0" max="1000">
   <legend>Price range</legend>
-  <label>Min price <input type="range" value="200"></label>
-  <label>Max price <input type="range" value="780"></label>
+  <label>Min price <input type="range" min="0" max="1000" value="200"></label>
+  <label>Max price <input type="range" min="0" max="1000" value="780"></label>
 </rangegroup>
 
 <!-- distribution preview drawn behind the slider -->
 <svg id="price-histogram-svg" class="price-histogram-svg"></svg>
 
-<!-- floating price tags follow each thumb via anchor positioning -->
+<!-- authored price tags in a row above the histogram -->
 <div id="price-tag-1" class="price-tag">$200</div>
 <div id="price-tag-2" class="price-tag">$780</div>
 
@@ -226,9 +211,17 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
+rangegroup {
+  --track-height: 6px;
+  --thumb-inline-size: 16px;
+  --thumb-block-size: 28px;
+}
 rangegroup::slider-track {
   background: #d6dbe2;
   border-radius: 999px;
+}
+rangegroup::slider-segment {
+  background: #d6dbe2;
 }
 rangegroup::slider-segment(2) {
   background: #14b8a6;
@@ -236,33 +229,29 @@ rangegroup::slider-segment(2) {
 
 /* pill thumb with two-bar grip icon */
 rangegroup::slider-thumb(*) {
-  width: 16px; height: 28px;
+  inline-size: 16px;
+  block-size: 28px;
   border-radius: 8px;
   background-color: white;
   border: 2px solid #14b8a6;
-  background-image: url("...two-bar grip svg...");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 28'><line x1='6' y1='9' x2='6' y2='19' stroke='%2314b8a6' stroke-width='1.5' stroke-linecap='round'/><line x1='10' y1='9' x2='10' y2='19' stroke='%2314b8a6' stroke-width='1.5' stroke-linecap='round'/></svg>");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   box-shadow: 0 2px 6px rgba(20, 184, 166, 0.25);
 }
-rangegroup::slider-thumb(1) { anchor-name: --price-hist-1; }
-rangegroup::slider-thumb(2) { anchor-name: --price-hist-2; }
 
 /* histogram bars repaint as the range moves */
 .price-histogram-svg rect                        { fill: #d6dbe2; }
 .price-histogram-svg rect[data-in-range="true"]  { fill: #14b8a6; }
 
-/* one price tag per thumb, anchored above it */
+/* Price tags are authored output arranged above the histogram. */
 .price-tag {
-  position: absolute;
-  bottom: anchor(top);
-  left:   anchor(center);
-  translate: -50% -8px;
   background: #14b8a6;
   color: white;
   padding: 4px 9px;
   border-radius: 999px;
 }
-#price-tag-1 { position-anchor: --price-hist-1; }
-#price-tag-2 { position-anchor: --price-hist-2; }
 `}
         />
         <CodeSnippet
@@ -279,7 +268,7 @@ const weights = Array.from(bars, b => Number(b.dataset.weight));
 const total   = weights.reduce((a, b) => a + b, 0);
 const fmt     = new Intl.NumberFormat("en-US");
 
-rg.addEventListener("input", () => {
+rg.querySelectorAll('input[type="range"]').forEach(input => input.addEventListener("input", () => {
   const [lo, hi] = rg.values.map(v => Math.round(v));
   tag1.textContent = \`$\${lo}\`;
   tag2.textContent = \`$\${hi}\`;
@@ -290,7 +279,7 @@ rg.addEventListener("input", () => {
     const inRange = v >= lo && v <= hi;
     bar.dataset.inRange = String(inRange);
     if (inRange) active += weights[i];
-  });
+  }));
   count.textContent = fmt.format(Math.round(active / total * 1923));
 });
 `}
@@ -348,25 +337,15 @@ rg.addEventListener("input", () => {
                     histTag1.textContent = `$${lo}`;
                     histTag2.textContent = `$${hi}`;
                 };
-                rg.addEventListener("input", updateHist);
+                rg.querySelectorAll('input[type="range"]').forEach((input) =>
+                    input.addEventListener("input", updateHist),
+                );
                 updateHist();
             };
-
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

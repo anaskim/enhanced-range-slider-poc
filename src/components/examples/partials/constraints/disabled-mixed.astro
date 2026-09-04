@@ -12,19 +12,15 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #disabled-mixed-example::part(slider-segment-1),
-            #disabled-mixed-example::part(slider-segment-3) {
-                background-color: #d8d8de;
-            }
-            #disabled-mixed-example::part(slider-segment-2) {
+            #disabled-mixed-example::slider-segment(2) {
                 background-color: var(--color-teal);
             }
-            #disabled-mixed-example::part(slider-thumb) {
-                --slider-thumb-color: var(--color-teal);
+            #disabled-mixed-example:has(input[name="dis-mixed-min"]:disabled)::slider-thumb(1) {
+                opacity: 0.45;
             }
         </style>
-        <range-group id="disabled-mixed-example" min="0" max="100">
-            <legend slot="legend" class="visually-hidden">Mixed disabled</legend>
+        <rangegroup id="disabled-mixed-example" min="0" max="100">
+            <legend class="visually-hidden">Mixed disabled</legend>
             <label class="visually-hidden">
                 Minimum (locked)
                 <input type="range" name="dis-mixed-min" value="30" disabled />
@@ -33,7 +29,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 Maximum
                 <input type="range" name="dis-mixed-max" value="70" />
             </label>
-        </range-group>
+        </rangegroup>
         <div class="button-group">
             <button id="toggleDisabledBtn" class="btn btn-primary">Toggle group disabled</button>
         </div>
@@ -55,15 +51,15 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-rangegroup::slider-segment(1),
-rangegroup::slider-segment(3) {
-  background-color: #d8d8de;        /* outside selected range */
-}
 rangegroup::slider-segment(2) {
-  background-color: #14b8a6;        /* selected range */
+  background-color: var(--color-teal);
 }
-rangegroup::slider-thumb(*) {
-  background-color: #14b8a6;
+/* Thumb geometry and color come from UA styles. */
+rangegroup:has(input[name="dis-mixed-min"]:disabled)::slider-thumb(1) {
+  opacity: .45;
+}
+rangegroup[disabled] {
+  opacity: .58;
 }
 `}
         />
@@ -86,33 +82,22 @@ btn.addEventListener("click", () => {
     <script is:inline slot="runtime">
         (() => {
             const init = () => {
-                const rg     = document.querySelector("#disabled-mixed-example");
-                const btn    = document.querySelector("#toggleDisabledBtn");
+                const rg = document.querySelector("#disabled-mixed-example");
+                const btn = document.querySelector("#toggleDisabledBtn");
                 const output = document.querySelector("#disabledOutput");
-                
+
                 btn.addEventListener("click", () => {
-                  rg.disabled = !rg.disabled;
-                  output.value = `Group disabled: ${rg.disabled}`;
-                  /* The first input keeps its own `disabled` attribute, so
+                    rg.disabled = !rg.disabled;
+                    output.value = `Group disabled: ${rg.disabled}`;
+                    /* The first input keeps its own `disabled` attribute, so
                      toggling the group back on leaves it locked. */
                 });
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

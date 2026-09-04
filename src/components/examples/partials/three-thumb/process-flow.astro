@@ -11,85 +11,134 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #multiphase-example::part(slider-tick) {
-                height: 12px;
-                width: 2px;
+            .process-flow-milestones {
+                position: relative;
+                block-size: 2.5rem;
+                margin-block-start: -7px;
+                color: var(--text-muted);
+                font-size: 0.75rem;
+                line-height: 1;
+                pointer-events: none;
             }
-            #multiphase-example::part(slider-tick-1) {
-                background: #aaa;
+            .process-flow-milestones span {
+                position: absolute;
+                inset-inline-start: var(--process-position);
+                translate: -50% 0;
+                color: var(--process-label-color);
+                white-space: nowrap;
             }
-            #multiphase-example::part(slider-tick-label-1) {
-                color: #777;
+            .process-flow-milestones span::before {
+                display: block;
+                inline-size: 2px;
+                block-size: 12px;
+                margin: 0 auto 0.35rem;
+                background: var(--process-tick-color);
+                content: "";
             }
-            #multiphase-example::part(slider-tick-2) {
-                background: #d97706;
+            .process-flow-milestones span:first-child {
+                translate: 0 0;
             }
-            #multiphase-example::part(slider-tick-label-2) {
-                color: #d97706;
+            .process-flow-milestones span:first-child::before {
+                margin-inline-start: 0;
             }
-            #multiphase-example::part(slider-tick-3) {
-                background: #16a34a;
+            .process-flow-milestones span:last-child {
+                translate: -100% 0;
             }
-            #multiphase-example::part(slider-tick-label-3) {
-                color: #16a34a;
-            }
-            #multiphase-example::part(slider-tick-4) {
-                background: #2563eb;
-            }
-            #multiphase-example::part(slider-tick-label-4) {
-                color: #2563eb;
+            .process-flow-milestones span:last-child::before {
+                margin-inline-end: 0;
             }
         </style>
-        <range-group id="multiphase-example" min="0" max="100" list="multiphase-datalist">
-            <legend slot="legend" class="visually-hidden">Process flow</legend>
-            <label class="visually-hidden">Phase 1 End <input type="range" value="20" /></label>
-            <label class="visually-hidden">Phase 2 End <input type="range" value="50" /></label>
-            <label class="visually-hidden">Phase 3 End <input type="range" value="80" /></label>
-        </range-group>
+        <rangegroup id="multiphase-example" min="0" max="3" list="multiphase-datalist">
+            <legend class="visually-hidden">Process flow</legend>
+            <label class="visually-hidden">
+                Review
+                <input type="range" min="0" max="3" step="1" value="1" />
+            </label>
+            <label class="visually-hidden">
+                Approved start
+                <input type="range" min="0" max="3" step="1" value="2" />
+            </label>
+            <label class="visually-hidden">
+                Approved end
+                <input type="range" min="0" max="3" step="1" value="2" />
+            </label>
+        </rangegroup>
         <datalist id="multiphase-datalist">
             <option value="0" label="Start"></option>
-            <option value="33" label="Review"></option>
-            <option value="66" label="Approved"></option>
-            <option value="100" label="Complete"></option>
+            <option value="1" label="Review"></option>
+            <option value="2" label="Approved"></option>
+            <option value="3" label="Complete"></option>
         </datalist>
+        <div class="process-flow-milestones" aria-hidden="true">
+            <span style="--process-position: 0%; --process-tick-color: #aaa; --process-label-color: #777">Start</span>
+            <span style="--process-position: 33.3333%; --process-tick-color: #d97706; --process-label-color: #d97706"
+                >Review</span
+            >
+            <span style="--process-position: 66.6667%; --process-tick-color: #16a34a; --process-label-color: #16a34a"
+                >Approved</span
+            >
+            <span style="--process-position: 100%; --process-tick-color: #2563eb; --process-label-color: #2563eb"
+                >Complete</span
+            >
+        </div>
     </div>
     <ExampleCodeBlock slot="code">
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup min="0" max="100" list="multiphase-datalist">
+<rangegroup min="0" max="3" list="multiphase-datalist">
   <legend>Process flow</legend>
-  <label>Phase 1 end <input type="range" value="20"></label>
-  <label>Phase 2 end <input type="range" value="50"></label>
-  <label>Phase 3 end <input type="range" value="80"></label>
+  <label>Review         <input type="range" min="0" max="3" step="1" value="1"></label>
+  <label>Approved start <input type="range" min="0" max="3" step="1" value="2"></label>
+  <label>Approved end   <input type="range" min="0" max="3" step="1" value="2"></label>
 </rangegroup>
 
 <datalist id="multiphase-datalist">
   <option value="0"   label="Start"></option>
-  <option value="33"  label="Review"></option>
-  <option value="66"  label="Approved"></option>
-  <option value="100" label="Complete"></option>
+  <option value="1" label="Review"></option>
+  <option value="2" label="Approved"></option>
+  <option value="3" label="Complete"></option>
 </datalist>
+
+<div class="process-flow-milestones" aria-hidden="true">
+  <span style="--process-position: 0%; --process-tick-color: #aaa; --process-label-color: #777">Start</span>
+  <span style="--process-position: 33.3333%; --process-tick-color: #d97706; --process-label-color: #d97706">Review</span>
+  <span style="--process-position: 66.6667%; --process-tick-color: #16a34a; --process-label-color: #16a34a">Approved</span>
+  <span style="--process-position: 100%; --process-tick-color: #2563eb; --process-label-color: #2563eb">Complete</span>
+</div>
 `}
         />
         <CodeSnippet
             lang="css"
             code={`
-/* taller, thinner tick marks */
-rangegroup::slider-tick(*) {
-  height: 12px;
-  width: 2px;
+/* The track, segments, and thumbs use their UA styles.
+   Landmarks are authored until public tick pseudos are available. */
+.process-flow-milestones {
+  position: relative;
+  block-size: 2.5rem;
+  margin-block-start: -7px;
+  color: var(--text-muted);
+  font-size: .75rem;
+  line-height: 1;
+  pointer-events: none;
 }
-
-/* colour-code each phase boundary */
-rangegroup::slider-tick(1)       { background: #aaa;    }
-rangegroup::slider-tick-label(1) { color: #777;         }
-rangegroup::slider-tick(2)       { background: #d97706; }
-rangegroup::slider-tick-label(2) { color: #d97706;      }
-rangegroup::slider-tick(3)       { background: #16a34a; }
-rangegroup::slider-tick-label(3) { color: #16a34a;      }
-rangegroup::slider-tick(4)       { background: #2563eb; }
-rangegroup::slider-tick-label(4) { color: #2563eb;      }
+.process-flow-milestones span {
+  position: absolute;
+  inset-inline-start: var(--process-position);
+  translate: -50% 0;
+  color: var(--process-label-color);
+  white-space: nowrap;
+}
+.process-flow-milestones span::before {
+  display: block;
+  inline-size: 2px;
+  block-size: 12px;
+  margin: 0 auto .35rem;
+  background: var(--process-tick-color);
+  content: "";
+}
+.process-flow-milestones span:first-child { translate: 0 0; }
+.process-flow-milestones span:last-child { translate: -100% 0; }
 `}
         />
     </ExampleCodeBlock>

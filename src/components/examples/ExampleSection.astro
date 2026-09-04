@@ -3,17 +3,32 @@ interface Props {
     id: string;
     eyebrow: string;
     title: string;
+    status?: "native" | "partial" | "gap";
 }
 
-const { id, eyebrow, title } = Astro.props as Props;
+const { id, eyebrow, title, status = "native" } = Astro.props as Props;
+const statusLabels = {
+    partial: "Gap",
+    gap: "Design question",
+} as const;
 ---
 
 <section class="example" id={id}>
     <p class="eyebrow">{eyebrow}</p>
-    <h2>{title}</h2>
+    <div class="example-heading">
+        <h2>{title}</h2>
+        {status !== "native" && <span class={`status-badge status-${status}`}>{statusLabels[status]}</span>}
+    </div>
     <p class="description">
         <slot name="description" />
     </p>
+    {
+        Astro.slots.has("disclosure") && (
+            <aside class="prototype-disclosure">
+                <slot name="disclosure" />
+            </aside>
+        )
+    }
     <div class="card">
         <slot name="demo" />
     </div>
