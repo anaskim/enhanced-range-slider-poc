@@ -22,6 +22,12 @@ import CodeSnippet from "../../CodeSnippet.astro";
         any thumb count &mdash; with three or more, the pointer picks which segment moves (see
         the segment-drag examples further down).
     </Fragment>
+    <Fragment slot="disclosure">
+        Chromium exposes this experiment behind the separate <code>RangeGroupSegmentDragging</code> runtime flag. The design
+        question is whether segment dragging should be native at all and, if so, whether it is the default or an author opt-in
+        such as the working <code>interaction="range"</code> syntax. A public design also needs keyboard and accessibility
+        equivalents, hit-testing rules, and deterministic behavior when constraints leave no common movement.
+    </Fragment>
     <div slot="demo">
         <style is:global>
             #interaction-mode-range::slider-segment(2) {
@@ -47,7 +53,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
             lang="html"
             code={`
 <rangegroup min="0" max="120">
-  <!-- The prototype currently enables interior segment dragging internally.
+  <!-- The RangeGroupSegmentDragging flag enables interior segment dragging.
        A public opt-in such as interaction="range" remains unresolved. -->
   <legend>Clip in and out points</legend>
   <label>In <input type="range" name="clip-in" min="0" max="120" value="24"></label>

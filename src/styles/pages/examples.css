@@ -92,7 +92,8 @@
     color: var(--accent-deep);
 }
 
-.runtime-status[data-state="fallback"] {
+.runtime-status[data-state="fallback"],
+.runtime-status[data-state="partial"] {
     border-color: color-mix(in srgb, #d18b20 45%, var(--border));
     background: color-mix(in srgb, #f5b942 14%, var(--surface));
     color: var(--text-strong);

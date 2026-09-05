@@ -18,20 +18,26 @@ function selectorParses(selector: string): boolean {
     return parsed;
 }
 
-function hasNativePrototype(): boolean {
-    if (typeof window.HTMLRangeGroupElement !== "function") {
-        return false;
-    }
+interface NativePrototypeSupport {
+    core: boolean;
+    convenienceApi: boolean;
+    pseudos: boolean;
+}
 
+function detectNativePrototype(): NativePrototypeSupport {
     const group = document.createElement("rangegroup");
-    return (
-        group instanceof window.HTMLRangeGroupElement &&
-        "values" in group &&
-        "inputs" in group &&
+    const core = typeof window.HTMLRangeGroupElement === "function" && group instanceof window.HTMLRangeGroupElement;
+    const convenienceApi =
+        core &&
+        ["values", "inputs", "getRangeInput", "setRangeValue", "addThumb", "removeThumb"].every(
+            (member) => member in group,
+        );
+    const pseudos =
         selectorParses("rangegroup::slider-track") &&
         selectorParses("rangegroup::slider-segment") &&
-        selectorParses("rangegroup::slider-thumb(*)")
-    );
+        selectorParses("rangegroup::slider-thumb(*)");
+
+    return { core, convenienceApi, pseudos };
 }
 
 function initializeTheme(): void {
@@ -83,15 +89,46 @@ function initializeTheme(): void {
     });
 }
 
-function initializePrototypeStatus(): void {
-    const ready = hasNativePrototype();
+function initializePrototypeStatus(): boolean {
+    const support = detectNativePrototype();
+    const ready = support.core && support.convenienceApi && support.pseudos;
     const html = document.documentElement;
     html.classList.toggle("prototype-ready", ready);
-    html.classList.toggle("prototype-fallback", !ready);
+    html.classList.toggle("prototype-partial", support.core && !ready);
+    html.classList.toggle("prototype-fallback", !support.core);
+    html.dataset.rangegroupCore = support.core ? "on" : "off";
+    html.dataset.rangegroupApi = support.convenienceApi ? "on" : "off";
+    html.dataset.rangegroupPseudos = support.pseudos ? "on" : "off";
 
     document.querySelectorAll<HTMLElement>("[data-runtime-status]").forEach((status) => {
-        status.textContent = ready ? "Feature on" : "Fallback mode";
-        status.dataset.state = ready ? "ready" : "fallback";
+        status.textContent = !support.core ? "Fallback mode" : ready ? "Prototype ready" : "Partial prototype";
+        status.dataset.state = !support.core ? "fallback" : ready ? "ready" : "partial";
+        status.title = [
+            `Core: ${support.core ? "on" : "off"}`,
+            `Convenience API: ${support.convenienceApi ? "on" : "off"}`,
+            `Slider pseudos: ${support.pseudos ? "on" : "off"}`,
+            "Segment dragging: requires the RangeGroupSegmentDragging launch flag",
+        ].join("\n");
+    });
+
+    return ready;
+}
+
+function initializeExampleRuntimes(enabled: boolean): void {
+    if (!enabled) {
+        return;
+    }
+
+    document.querySelectorAll<HTMLTemplateElement>("template[data-example-runtime]").forEach((template) => {
+        template.content.querySelectorAll<HTMLScriptElement>("script").forEach((source) => {
+            const script = document.createElement("script");
+            for (const attribute of source.attributes) {
+                script.setAttribute(attribute.name, attribute.value);
+            }
+            script.textContent = source.textContent;
+            template.before(script);
+        });
+        template.remove();
     });
 }
 
@@ -296,8 +333,9 @@ function initializeCodeBlocks(): void {
 
 document.addEventListener("DOMContentLoaded", () => {
     initializeTheme();
-    initializePrototypeStatus();
+    const prototypeReady = initializePrototypeStatus();
     initializeMobileMenu();
     initializeScrollSpy();
     initializeCodeBlocks();
+    initializeExampleRuntimes(prototypeReady);
 });

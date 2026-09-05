@@ -19,10 +19,10 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <code>stepbetween</code>.
     </Fragment>
     <Fragment slot="disclosure">
-        With four thumbs, the control has three interior segments: the two open shifts and the closed gap between them.
-        Chromium currently makes all three draggable, even though this design intends only the teal shifts to move. A
-        public design must let authors identify movable intervals without inferring semantics from color, and must
-        define keyboard, accessibility, focus, and event behavior for the selected pair.
+        The separate <code>RangeGroupSegmentDragging</code> runtime flag makes all three interior segments draggable: the
+        two open shifts and the closed gap between them. This design intends only the teal shifts to move. A public design
+        must let authors identify movable intervals without inferring semantics from color, and must define keyboard, accessibility,
+        focus, and event behavior for the selected pair.
     </Fragment>
     <div slot="demo" class="hours-card">
         <style is:global>
@@ -160,7 +160,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
             code={`
 <rangegroup id="opening-hours-segment-range" min="480" max="1320" list="hours-ticks"
             stepbetween="30">
-  <!-- The prototype enables interior segment dragging internally.
+  <!-- The RangeGroupSegmentDragging flag enables interior segment dragging.
        A public way to select movable intervals remains unresolved. -->
   <legend>Opening hours endpoints</legend>
   <label>AM Open <input type="range" min="480" max="1320" value="540"></label>

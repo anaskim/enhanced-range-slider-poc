@@ -33,5 +33,11 @@ const statusLabels = {
         <slot name="demo" />
     </div>
     <slot name="code" />
-    <slot name="runtime" />
+    {
+        Astro.slots.has("runtime") && (
+            <template data-example-runtime>
+                <slot name="runtime" />
+            </template>
+        )
+    }
 </section>

@@ -293,7 +293,7 @@ addBtn.addEventListener("click", () => {
     max: "100",
     label: "Stop " + (rg.inputs.length + 1),
   });
-  /* Keep the semantic input while its native proxy remains on the shared track. */
+  /* Hide the host box; Chromium suppresses its standalone slider painting. */
   input.classList.add("visually-hidden");
   render();
 });
