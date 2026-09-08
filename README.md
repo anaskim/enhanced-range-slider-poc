@@ -56,7 +56,10 @@ experiment, `::slider-track`, `::slider-segment`, `::slider-thumb`, indexed
 `::slider-segment(n)` and `::slider-thumb(n)`, and wildcard
 `::slider-thumb(*)` pseudo-elements. Participating inputs retain their host
 layout and semantics while their standalone internal slider painting is
-suppressed.
+suppressed. Inherited horizontal and vertical writing modes share logical
+proxy geometry, keyboard focus is indicated on the visible proxy thumb,
+browser focus reveal follows that proxy while respecting `preventScroll`, and
+the single-active-pointer model preserves browser pinch zoom.
 
 The following proposal areas remain unresolved or unimplemented:
 
@@ -67,7 +70,8 @@ The following proposal areas remain unresolved or unimplemented:
 - datalist keyboard snapping;
 - mutation-time automatic constraint repair;
 - multiple simultaneous touches;
-- maximum or per-pair gaps, nonlinear scales, and vertical orientation.
+- maximum or per-pair gaps, nonlinear scales, a dedicated orientation API, and
+  deliberately different group and child writing modes.
 
 See the [Open UI enhanced range input explainer](https://open-ui.org/components/enhanced-range-input.explainer/)
 for the proposal context.
