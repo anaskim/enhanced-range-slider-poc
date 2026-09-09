@@ -281,7 +281,6 @@ const render = () => {
   remBtn.disabled = rg.inputs.length <= 2;
 };
 
-/* add a stop in the widest gap */
 addBtn.addEventListener("click", () => {
   const v = [...rg.values].sort((a, b) => a - b);
   let value = 50, gap = -1;
@@ -293,7 +292,6 @@ addBtn.addEventListener("click", () => {
     max: "100",
     label: "Stop " + (rg.inputs.length + 1),
   });
-  /* Hide the host box; Chromium suppresses its standalone slider painting. */
   input.classList.add("visually-hidden");
   render();
 });
