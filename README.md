@@ -67,7 +67,6 @@ The following proposal areas remain unresolved or unimplemented:
 - a public opt-in and keyboard or assistive technology equivalent for
   whole-interval dragging;
 - custom path hit testing and inverse pointer mapping;
-- datalist keyboard snapping;
 - mutation-time automatic constraint repair;
 - multiple simultaneous touches;
 - maximum or per-pair gaps, nonlinear scales, a dedicated orientation API, and
