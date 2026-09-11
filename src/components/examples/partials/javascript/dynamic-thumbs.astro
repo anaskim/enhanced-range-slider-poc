@@ -6,9 +6,9 @@ import CodeSnippet from "../../CodeSnippet.astro";
 
 <ExampleSection id="dynamic-thumbs" eyebrow="JavaScript API" title="Add & remove thumbs (gradient builder)">
     <Fragment slot="description">
-        A live gradient editor where each thumb is a color stop. <code>addThumb(value, options)</code> and
-        <code>removeThumb(index)</code> grow and shrink the control on demand &mdash; new handles are real
-        <code>&lt;input type="range"&gt;</code> elements, so they stay keyboard-accessible and form-friendly.
+        A live gradient editor where each thumb is a color stop. DOM insertion and <code>removeThumb(index)</code>
+        grow and shrink the control on demand &mdash; new handles are real <code>&lt;input type="range"&gt;</code>
+        elements, so they stay keyboard-accessible and form-friendly.
     </Fragment>
     <div slot="demo" class="dynamic-card">
         <style is:global>
@@ -219,8 +219,9 @@ const colorFor = new WeakMap();   // keep a colour stable per <input>
 let next = 0;
 
 const ensureColors = () => {
-  rg.inputs.forEach(inp => {
+  rg.inputs.forEach((inp, i) => {
     if (!colorFor.has(inp)) colorFor.set(inp, palette[next++ % palette.length]);
+    inp.setAttribute("aria-label", "Stop " + (i + 1));
   });
 };
 
@@ -282,17 +283,27 @@ const render = () => {
 };
 
 addBtn.addEventListener("click", () => {
-  const v = [...rg.values].sort((a, b) => a - b);
-  let value = 50, gap = -1;
-  for (let i = 0; i < v.length - 1; i++) {
-    if (v[i + 1] - v[i] > gap) { gap = v[i + 1] - v[i]; value = (v[i] + v[i + 1]) / 2; }
+  const inputs = [...rg.inputs];
+  let insertionIndex = 1, gap = -1;
+  for (let i = 0; i < inputs.length - 1; i++) {
+    const currentGap = Number(inputs[i + 1].value) - Number(inputs[i].value);
+    if (currentGap > gap) { gap = currentGap; insertionIndex = i + 1; }
   }
-  const input = rg.addThumb(Math.round(value), {
-    min: "0",
-    max: "100",
-    label: "Stop " + (rg.inputs.length + 1),
-  });
+  const predecessor = inputs[insertionIndex - 1];
+  const successor = inputs[insertionIndex];
+  const input = document.createElement("input");
+  input.type = "range";
+  input.min = "0";
+  input.max = "100";
+  input.value = String(Math.round(
+    (Number(predecessor.value) + Number(successor.value)) / 2
+  ));
   input.classList.add("visually-hidden");
+  let insertionPoint = successor;
+  while (insertionPoint.parentElement !== rg) {
+    insertionPoint = insertionPoint.parentElement;
+  }
+  rg.insertBefore(input, insertionPoint);
   render();
 });
 
@@ -325,8 +336,9 @@ render();
                 let next = 0;
 
                 const ensureColors = () => {
-                    rg.inputs.forEach((inp) => {
+                    rg.inputs.forEach((inp, i) => {
                         if (!colorFor.has(inp)) colorFor.set(inp, palette[next++ % palette.length]);
+                        inp.setAttribute("aria-label", `Stop ${i + 1}`);
                     });
                 };
 
@@ -387,21 +399,29 @@ render();
                 };
 
                 addBtn.addEventListener("click", () => {
-                    const v = [...rg.values].sort((a, b) => a - b);
-                    let value = 50,
+                    const inputs = [...rg.inputs];
+                    let insertionIndex = 1,
                         gap = -1;
-                    for (let i = 0; i < v.length - 1; i++) {
-                        if (v[i + 1] - v[i] > gap) {
-                            gap = v[i + 1] - v[i];
-                            value = (v[i] + v[i + 1]) / 2;
+                    for (let i = 0; i < inputs.length - 1; i++) {
+                        const currentGap = Number(inputs[i + 1].value) - Number(inputs[i].value);
+                        if (currentGap > gap) {
+                            gap = currentGap;
+                            insertionIndex = i + 1;
                         }
                     }
-                    const input = rg.addThumb(Math.round(value), {
-                        min: "0",
-                        max: "100",
-                        label: `Stop ${rg.inputs.length + 1}`,
-                    });
+                    const predecessor = inputs[insertionIndex - 1];
+                    const successor = inputs[insertionIndex];
+                    const input = document.createElement("input");
+                    input.type = "range";
+                    input.min = "0";
+                    input.max = "100";
+                    input.value = String(Math.round((Number(predecessor.value) + Number(successor.value)) / 2));
                     input.classList.add("visually-hidden");
+                    let insertionPoint = successor;
+                    while (insertionPoint.parentElement !== rg) {
+                        insertionPoint = insertionPoint.parentElement;
+                    }
+                    rg.insertBefore(input, insertionPoint);
                     render();
                 });
 

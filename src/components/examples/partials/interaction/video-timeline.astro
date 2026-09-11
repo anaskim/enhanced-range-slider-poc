@@ -365,9 +365,10 @@ for (const input of rg.querySelectorAll('input[type="range"]')) {
                 rg.querySelectorAll('input[type="range"]').forEach((input) => {
                     input.addEventListener("input", () => {
                         syncReadout();
-                        if (!playing) return;
                         const [lo, hi] = rg.values;
-                        if (playheadTime < lo || playheadTime >= hi) setPlayhead(lo);
+                        const clampedTime = Math.min(hi, Math.max(lo, playheadTime));
+                        if (clampedTime !== playheadTime) setPlayhead(clampedTime);
+                        if (playing && !raf) raf = requestAnimationFrame(tick);
                     });
                 });
 
