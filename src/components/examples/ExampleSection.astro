@@ -4,9 +4,10 @@ interface Props {
     eyebrow: string;
     title: string;
     status?: "native" | "partial" | "gap";
+    runtimeRequires?: Array<"core" | "convenienceApi" | "pseudos">;
 }
 
-const { id, eyebrow, title, status = "native" } = Astro.props as Props;
+const { id, eyebrow, title, status = "native", runtimeRequires = ["core"] } = Astro.props as Props;
 const statusLabels = {
     partial: "Gap",
     gap: "Design question",
@@ -35,7 +36,7 @@ const statusLabels = {
     <slot name="code" />
     {
         Astro.slots.has("runtime") && (
-            <template data-example-runtime>
+            <template data-example-runtime data-runtime-requires={runtimeRequires.join(" ")}>
                 <slot name="runtime" />
             </template>
         )

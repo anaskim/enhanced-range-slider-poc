@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="temperature" eyebrow="Three-plus thumb patterns" title="Multi-handle temperature">
+<ExampleSection
+    id="temperature"
+    eyebrow="Three-plus thumb patterns"
+    title="Multi-handle temperature"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Three handles set boundaries for cold / mild / warm / hot zones, each segment rendered in its own colour and
         each thumb with a matching glow.

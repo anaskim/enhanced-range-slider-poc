@@ -4,7 +4,13 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="video-timeline" eyebrow="Interaction modes" title="Video timeline trim" status="partial">
+<ExampleSection
+    id="video-timeline"
+    eyebrow="Interaction modes"
+    title="Video timeline trim"
+    status="partial"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Drag the selected clip to slide in and out together while keeping duration. Pressing the
         timeline before or after the clip moves the clip there rather than trimming one end; only

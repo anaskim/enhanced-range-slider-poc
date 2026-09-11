@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="opening-hours" eyebrow="Three-plus thumb patterns" title="Opening hours selector">
+<ExampleSection
+    id="opening-hours"
+    eyebrow="Three-plus thumb patterns"
+    title="Opening hours selector"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Four handles define morning and afternoon shifts on a single 8&nbsp;AM&ndash;10&nbsp;PM timeline. The scale
         provides hourly tick labels with half-hour granularity.

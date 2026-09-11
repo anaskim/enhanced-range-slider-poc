@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="api" eyebrow="JavaScript API" title="Programmatic interaction">
+<ExampleSection
+    id="api"
+    eyebrow="JavaScript API"
+    title="Programmatic interaction"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Use the component&rsquo;s public methods and properties to get and set values from script.
     </Fragment>

@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="linked-fields" eyebrow="JavaScript API" title="Linked value fields (author JS)">
+<ExampleSection
+    id="linked-fields"
+    eyebrow="JavaScript API"
+    title="Linked value fields (author JS)"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Telecon outcome on
         <a href="https://github.com/openui/open-ui/issues/1459">#1459</a>: linking a number field to a slider is not a <code

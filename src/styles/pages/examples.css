@@ -104,7 +104,7 @@ rangegroup {
     width: 100%;
 }
 
-.prototype-ready
+.prototype-pseudos
     rangegroup:not(
         :where(
             #baseline-range,
@@ -132,7 +132,7 @@ rangegroup {
     background-color: color-mix(in srgb, var(--slider-track-color, var(--accent)) 20%, var(--border));
 }
 
-.prototype-ready
+.prototype-pseudos
     rangegroup:not(
         :where(
             #baseline-range,
@@ -161,7 +161,7 @@ rangegroup {
     background-color: var(--slider-segment-color, var(--slider-fill-color, var(--accent)));
 }
 
-.prototype-ready
+.prototype-pseudos
     rangegroup:not(
         :where(
             #baseline-range,
@@ -198,7 +198,7 @@ rangegroup {
         transform 0.15s ease;
 }
 
-.prototype-ready
+.prototype-pseudos
     rangegroup:not(
         :where(
             #baseline-range,

@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="crossfade" eyebrow="Three-plus thumb patterns" title="Crossfade overlap editor">
+<ExampleSection
+    id="crossfade"
+    eyebrow="Three-plus thumb patterns"
+    title="Crossfade overlap editor"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         A 3-thumb pattern modeled on a DAW crossfade. The outer thumbs set when Track&nbsp;A starts fading out and when
         Track&nbsp;B reaches full volume; the middle thumb biases the crossover point that determines which track

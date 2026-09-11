@@ -4,7 +4,13 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="interaction-mode" eyebrow="Interaction modes" title="Interaction mode (working name)" status="gap">
+<ExampleSection
+    id="interaction-mode"
+    eyebrow="Interaction modes"
+    title="Interaction mode (working name)"
+    status="gap"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Compare endpoint-oriented vs range-oriented pointer behavior. The attribute
         <code>interaction</code> with keywords <code>endpoints</code> (default) and

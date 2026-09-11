@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="interactive-price" eyebrow="Foundations" title="Interactive price editor">
+<ExampleSection
+    id="interactive-price"
+    eyebrow="Foundations"
+    title="Interactive price editor"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Two-way binding between the component values and number inputs is
         <strong>author JavaScript</strong> — not a native <code>reference</code> API or built-in sibling fields. Linked value

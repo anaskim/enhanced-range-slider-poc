@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="dynamic-thumbs" eyebrow="JavaScript API" title="Add & remove thumbs (gradient builder)">
+<ExampleSection
+    id="dynamic-thumbs"
+    eyebrow="JavaScript API"
+    title="Add & remove thumbs (gradient builder)"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         A live gradient editor where each thumb is a color stop. DOM insertion and <code>removeThumb(index)</code>
         grow and shrink the control on demand &mdash; new handles are real <code>&lt;input type="range"&gt;</code>

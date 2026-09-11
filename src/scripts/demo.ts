@@ -22,6 +22,7 @@ interface NativePrototypeSupport {
     core: boolean;
     convenienceApi: boolean;
     pseudos: boolean;
+    segmentDragging: "separate-flag";
 }
 
 function detectNativePrototype(): NativePrototypeSupport {
@@ -37,7 +38,7 @@ function detectNativePrototype(): NativePrototypeSupport {
         selectorParses("rangegroup::slider-segment") &&
         selectorParses("rangegroup::slider-thumb(*)");
 
-    return { core, convenienceApi, pseudos };
+    return { core, convenienceApi, pseudos, segmentDragging: "separate-flag" };
 }
 
 function initializeTheme(): void {
@@ -89,16 +90,18 @@ function initializeTheme(): void {
     });
 }
 
-function initializePrototypeStatus(): boolean {
+function initializePrototypeStatus(): NativePrototypeSupport {
     const support = detectNativePrototype();
     const ready = support.core && support.convenienceApi && support.pseudos;
     const html = document.documentElement;
     html.classList.toggle("prototype-ready", ready);
     html.classList.toggle("prototype-partial", support.core && !ready);
     html.classList.toggle("prototype-fallback", !support.core);
+    html.classList.toggle("prototype-pseudos", support.core && support.pseudos);
     html.dataset.rangegroupCore = support.core ? "on" : "off";
     html.dataset.rangegroupApi = support.convenienceApi ? "on" : "off";
     html.dataset.rangegroupPseudos = support.pseudos ? "on" : "off";
+    html.dataset.rangegroupSegmentDragging = support.segmentDragging;
 
     document.querySelectorAll<HTMLElement>("[data-runtime-status]").forEach((status) => {
         status.textContent = !support.core ? "Fallback mode" : ready ? "Prototype ready" : "Partial prototype";
@@ -107,19 +110,28 @@ function initializePrototypeStatus(): boolean {
             `Core: ${support.core ? "on" : "off"}`,
             `Convenience API: ${support.convenienceApi ? "on" : "off"}`,
             `Slider pseudos: ${support.pseudos ? "on" : "off"}`,
-            "Segment dragging: requires the RangeGroupSegmentDragging launch flag",
+            "Segment dragging: separate launch flag; not feature-detectable",
         ].join("\n");
     });
 
-    return ready;
+    return support;
 }
 
-function initializeExampleRuntimes(enabled: boolean): void {
-    if (!enabled) {
-        return;
-    }
-
+function initializeExampleRuntimes(support: NativePrototypeSupport): void {
     document.querySelectorAll<HTMLTemplateElement>("template[data-example-runtime]").forEach((template) => {
+        const requiredCapabilities = (template.dataset.runtimeRequires ?? "core").split(" ") as Array<
+            keyof Pick<NativePrototypeSupport, "core" | "convenienceApi" | "pseudos">
+        >;
+        const enabled = requiredCapabilities.every((capability) => support[capability]);
+        const example = template.closest<HTMLElement>(".example");
+        if (example) {
+            example.dataset.runtimeState = enabled ? "enabled" : "blocked";
+            example.dataset.runtimeRequires = requiredCapabilities.join(" ");
+        }
+        if (!enabled) {
+            return;
+        }
+
         template.content.querySelectorAll<HTMLScriptElement>("script").forEach((source) => {
             const script = document.createElement("script");
             for (const attribute of source.attributes) {
@@ -333,9 +345,9 @@ function initializeCodeBlocks(): void {
 
 document.addEventListener("DOMContentLoaded", () => {
     initializeTheme();
-    const prototypeReady = initializePrototypeStatus();
+    const prototypeSupport = initializePrototypeStatus();
     initializeMobileMenu();
     initializeScrollSpy();
     initializeCodeBlocks();
-    initializeExampleRuntimes(prototypeReady);
+    initializeExampleRuntimes(prototypeSupport);
 });

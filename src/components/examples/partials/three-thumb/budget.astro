@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="budget" eyebrow="Three-plus thumb patterns" title="Budget allocator">
+<ExampleSection
+    id="budget"
+    eyebrow="Three-plus thumb patterns"
+    title="Budget allocator"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         A complete visual transformation. Three thumbs split a 0&ndash;100 range into four colored budget bars, with
         category labels centered on each segment. An <code>aria-live</code> region announces changes for assistive tech.

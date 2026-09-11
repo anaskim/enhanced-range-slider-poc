@@ -4,7 +4,13 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="classic" eyebrow="Creative styling" title="Classic OS look" status="partial">
+<ExampleSection
+    id="classic"
+    eyebrow="Creative styling"
+    title="Classic OS look"
+    status="partial"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Heavy custom styling on all parts to recreate a classic Win-style slider, with anchored tooltips.
     </Fragment>

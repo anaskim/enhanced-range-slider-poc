@@ -4,7 +4,13 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="circular-track" eyebrow="Creative styling" title="Circular track shape" status="gap">
+<ExampleSection
+    id="circular-track"
+    eyebrow="Creative styling"
+    title="Circular track shape"
+    status="gap"
+    runtimeRequires={["core", "convenienceApi", "pseudos"]}
+>
     <Fragment slot="description">
         A two-thumb circular range dial, built entirely with opt-in CSS. Thumbs orbit the ring via <code
             >offset-path</code

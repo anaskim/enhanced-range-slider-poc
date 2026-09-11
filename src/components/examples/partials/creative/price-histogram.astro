@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="price-histogram" eyebrow="Creative styling" title="Histogram price filter">
+<ExampleSection
+    id="price-histogram"
+    eyebrow="Creative styling"
+    title="Histogram price filter"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         An Airbnb-style price filter. The histogram behind the slider previews item distribution; bars inside the active
         range light up in the brand accent. Pill thumbs with grip lines pair with floating price tags.

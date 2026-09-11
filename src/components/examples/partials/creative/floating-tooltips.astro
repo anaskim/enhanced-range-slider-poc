@@ -4,7 +4,13 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="floating-tooltips" eyebrow="Creative styling" title="Floating anchored tooltips" status="partial">
+<ExampleSection
+    id="floating-tooltips"
+    eyebrow="Creative styling"
+    title="Floating anchored tooltips"
+    status="partial"
+    runtimeRequires={["core", "convenienceApi", "pseudos"]}
+>
     <Fragment slot="description">
         Invisible handles plus CSS Anchor Positioning makes external tooltips read as the draggable thumbs. The visible
         &ldquo;handle&rdquo; pills are just anchored DIVs.

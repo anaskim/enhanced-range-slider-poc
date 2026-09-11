@@ -4,7 +4,13 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="meeting-slot" eyebrow="Interaction modes" title="Meeting duration slot" status="partial">
+<ExampleSection
+    id="meeting-slot"
+    eyebrow="Interaction modes"
+    title="Meeting duration slot"
+    status="partial"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         A one-hour meeting on a workday calendar. Drag the block to a free slot without changing
         its length, or press anywhere on the day to send it there; the handles still resize. Busy

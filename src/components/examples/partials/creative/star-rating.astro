@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="star-rating" eyebrow="Creative styling" title="Star rating filter">
+<ExampleSection
+    id="star-rating"
+    eyebrow="Creative styling"
+    title="Star rating filter"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         A two-thumb 1&ndash;5 star rating filter. The five stars below the track act as labels for discrete snap
         positions &mdash; stars inside the selected range fill in gold, the rest stay hollow.

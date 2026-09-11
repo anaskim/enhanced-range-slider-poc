@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="gradient-stops" eyebrow="Creative styling" title="Color-stop gradient editor">
+<ExampleSection
+    id="gradient-stops"
+    eyebrow="Creative styling"
+    title="Color-stop gradient editor"
+    runtimeRequires={["core", "convenienceApi"]}
+>
     <Fragment slot="description">
         Three color swatches author a <code>linear-gradient(...)</code> string. Each thumb's position becomes a gradient stop
         in the preview above and in the slider's own segments below. The CSS string updates live; preset chips drive the <code

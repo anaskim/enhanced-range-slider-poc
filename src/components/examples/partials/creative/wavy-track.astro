@@ -4,7 +4,13 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="wavy-track" eyebrow="Creative styling" title="Wavy track shape" status="gap">
+<ExampleSection
+    id="wavy-track"
+    eyebrow="Creative styling"
+    title="Wavy track shape"
+    status="gap"
+    runtimeRequires={["core", "convenienceApi", "pseudos"]}
+>
     <Fragment slot="description">
         The track is repainted as a wave and every thumb rides the curve &mdash; with <strong
             >no changes to the control&rsquo;s value or interaction model</strong
