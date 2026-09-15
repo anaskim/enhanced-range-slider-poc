@@ -21,8 +21,10 @@ function selectorParses(selector: string): boolean {
 interface NativePrototypeSupport {
     core: boolean;
     convenienceApi: boolean;
+    datalistKeyboard: "separate-flag";
     pseudos: boolean;
     segmentDragging: "separate-flag";
+    tooltips: "separate-flag";
 }
 
 function detectNativePrototype(): NativePrototypeSupport {
@@ -38,7 +40,14 @@ function detectNativePrototype(): NativePrototypeSupport {
         selectorParses("rangegroup::slider-segment") &&
         selectorParses("rangegroup::slider-thumb(*)");
 
-    return { core, convenienceApi, pseudos, segmentDragging: "separate-flag" };
+    return {
+        core,
+        convenienceApi,
+        datalistKeyboard: "separate-flag",
+        pseudos,
+        segmentDragging: "separate-flag",
+        tooltips: "separate-flag",
+    };
 }
 
 function initializeTheme(): void {
@@ -100,8 +109,10 @@ function initializePrototypeStatus(): NativePrototypeSupport {
     html.classList.toggle("prototype-pseudos", support.core && support.pseudos);
     html.dataset.rangegroupCore = support.core ? "on" : "off";
     html.dataset.rangegroupApi = support.convenienceApi ? "on" : "off";
+    html.dataset.rangegroupDatalistKeyboard = support.datalistKeyboard;
     html.dataset.rangegroupPseudos = support.pseudos ? "on" : "off";
     html.dataset.rangegroupSegmentDragging = support.segmentDragging;
+    html.dataset.rangegroupTooltips = support.tooltips;
 
     document.querySelectorAll<HTMLElement>("[data-runtime-status]").forEach((status) => {
         status.textContent = !support.core ? "Fallback mode" : ready ? "Prototype ready" : "Partial prototype";
@@ -110,7 +121,9 @@ function initializePrototypeStatus(): NativePrototypeSupport {
             `Core: ${support.core ? "on" : "off"}`,
             `Convenience API: ${support.convenienceApi ? "on" : "off"}`,
             `Slider pseudos: ${support.pseudos ? "on" : "off"}`,
+            "Datalist keyboard navigation: separate launch flag; not feature-detectable",
             "Segment dragging: separate launch flag; not feature-detectable",
+            "Native tooltips: separate launch flag; not feature-detectable",
         ].join("\n");
     });
 
