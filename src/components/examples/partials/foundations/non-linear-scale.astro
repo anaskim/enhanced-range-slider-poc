@@ -28,7 +28,13 @@ const byValue = (hz: number) => ((hz - MIN) / (MAX - MIN)) * 100;
 const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
 ---
 
-<ExampleSection id="non-linear-scale" eyebrow="Foundations" title="Non-linear scale via datalist">
+<ExampleSection
+    id="non-linear-scale"
+    eyebrow="Foundations"
+    title="Non-linear scale via datalist"
+    status="gap"
+    runtimeRequires={["core", "convenienceApi", "pseudos"]}
+>
     <Fragment slot="description">
         Open UI <a href="https://github.com/openui/open-ui/issues/1464">resolved</a> to first prototype non-linear
         scales with nothing more than a <code>&lt;datalist&gt;</code>, which is what a range input can already express,
@@ -36,6 +42,12 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
         over the same ten octaves, with the same octave-band spectrum drawn behind the track. The only difference is
         where a stop is placed: by its value, or by its position in the list. Audio is the honest test case, because no
         one has ever shipped a linear frequency control.
+    </Fragment>
+    <Fragment slot="disclosure">
+        <code>RangeGroupDatalistKeyboardNavigation</code> separately gates arrow-key traversal through the datalist
+        values. It does not change visual geometry or pointer mapping, which remain linear value space. The evenly
+        spaced row therefore stores authored list indexes rather than the real frequency; true non-linear value mapping
+        remains outside v1.
     </Fragment>
     <div slot="demo" class="scale-card">
         <style is:global>
@@ -75,35 +87,17 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
                 background: var(--color-purple);
                 opacity: 1;
             }
-            .scale-row range-group {
+            .scale-row rangegroup {
                 --slider-thumb-color: var(--color-purple);
             }
-            #scale-datalist-range::part(slider-segment-2),
-            #scale-mapped-range::part(slider-segment-2) {
+            #scale-datalist-range::slider-segment(2),
+            #scale-mapped-range::slider-segment(2) {
                 background: var(--color-purple);
             }
-            #scale-datalist-range::part(slider-thumb),
-            #scale-mapped-range::part(slider-thumb) {
+            #scale-datalist-range::slider-thumb(*),
+            #scale-mapped-range::slider-thumb(*) {
                 background-color: var(--color-purple);
                 border-color: color-mix(in oklab, var(--color-purple) 70%, black 25%);
-            }
-            #scale-datalist-range::part(slider-tick),
-            #scale-mapped-range::part(slider-tick) {
-                background: var(--text-soft);
-            }
-            #scale-datalist-range::part(slider-tick-label),
-            #scale-mapped-range::part(slider-tick-label) {
-                color: var(--text-muted);
-                font-size: 0.7rem;
-            }
-            /* On the value-placed track the six lowest octaves share the first 3%, so their
-               labels cannot be drawn without overlapping. The ticks stay. */
-            #scale-datalist-range::part(slider-tick-label-2),
-            #scale-datalist-range::part(slider-tick-label-3),
-            #scale-datalist-range::part(slider-tick-label-4),
-            #scale-datalist-range::part(slider-tick-label-5),
-            #scale-datalist-range::part(slider-tick-label-6) {
-                display: none;
             }
             @media (max-width: 700px) {
                 .scale-spectrum {
@@ -132,11 +126,17 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
                     ))
                 }
             </div>
-            <range-group id="scale-datalist-range" min={MIN} max={MAX} list="scale-stops">
-                <legend slot="legend" class="visually-hidden">Filter band, stops placed by value</legend>
-                <label class="visually-hidden">Low cut <input type="range" name="low-cut" value="125" /></label>
-                <label class="visually-hidden">High cut <input type="range" name="high-cut" value="4000" /></label>
-            </range-group>
+            <rangegroup id="scale-datalist-range" min={MIN} max={MAX} list="scale-stops">
+                <legend class="visually-hidden">Filter band, stops placed by value</legend>
+                <label class="visually-hidden">
+                    Low cut
+                    <input type="range" name="low-cut" min={MIN} max={MAX} value="125" list="scale-stops" />
+                </label>
+                <label class="visually-hidden">
+                    High cut
+                    <input type="range" name="high-cut" min={MIN} max={MAX} value="4000" list="scale-stops" />
+                </label>
+            </rangegroup>
             <datalist id="scale-stops">
                 {bands.map((band) => <option value={band.hz} label={band.label} />)}
             </datalist>
@@ -163,11 +163,17 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
                     ))
                 }
             </div>
-            <range-group id="scale-mapped-range" min="0" max={bands.length - 1} list="scale-octaves">
-                <legend slot="legend" class="visually-hidden">Filter band, stops placed by position</legend>
-                <label class="visually-hidden">Low cut <input type="range" value="3" /></label>
-                <label class="visually-hidden">High cut <input type="range" value="8" /></label>
-            </range-group>
+            <rangegroup id="scale-mapped-range" min="0" max={bands.length - 1} list="scale-octaves">
+                <legend class="visually-hidden">Filter band, stops placed by position</legend>
+                <label class="visually-hidden">
+                    Low cut
+                    <input type="range" min="0" max={bands.length - 1} value="3" list="scale-octaves" />
+                </label>
+                <label class="visually-hidden">
+                    High cut
+                    <input type="range" min="0" max={bands.length - 1} value="8" list="scale-octaves" />
+                </label>
+            </rangegroup>
             <datalist id="scale-octaves">
                 {bands.map((band, i) => <option value={i} label={band.label} />)}
             </datalist>
@@ -226,8 +232,10 @@ rg.addEventListener("input", () => {
                 // How much of the track the selected band covers is the number that separates
                 // the two mappings, so both readouts report it.
                 const describe = (rg, lo, hi) => {
-                    const span = rg.max - rg.min;
-                    const start = Math.round(((rg.values[0] - rg.min) / span) * 100);
+                    const minimum = Number(rg.getAttribute("min"));
+                    const maximum = Number(rg.getAttribute("max"));
+                    const span = maximum - minimum;
+                    const start = Math.round(((rg.values[0] - minimum) / span) * 100);
                     const width = Math.round(((rg.values[1] - rg.values[0]) / span) * 100);
                     return `${formatHz(lo)} – ${formatHz(hi)} — band spans ${width}% of the track, low cut at ${start}%`;
                 };
@@ -264,21 +272,10 @@ rg.addEventListener("input", () => {
                 );
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>

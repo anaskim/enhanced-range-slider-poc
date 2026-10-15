@@ -1,0 +1,109 @@
+---
+import ExampleSection from "../../ExampleSection.astro";
+import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
+import CodeSnippet from "../../CodeSnippet.astro";
+---
+
+<ExampleSection id="anchored-labels" eyebrow="Foundations" title="Authored anchored labels" status="partial">
+    <Fragment slot="description">
+        Real labels can opt into CSS Anchor Positioning relative to their associated thumbs. The minimum uses implicit
+        wrapping, while the maximum uses an explicit <code>for</code>/<code>id</code> association; both labels retain normal
+        activation behavior.
+    </Fragment>
+    <Fragment slot="disclosure">
+        <code>RangeGroupAnchoredLabels</code> depends on <code>RangeGroup</code>, is independent of
+        <code>SliderPseudoElements</code>, and has no script-visible detection surface. Chromium supplies only each
+        label&rsquo;s implicit relationship to its thumb. The absolute positioning and <code>position-area</code> below are
+        entirely author CSS; there is no automatic UA label layout. Without native <code>&lt;rangegroup&gt;</code>, the
+        labels and fallback sliders return to normal flow.
+    </Fragment>
+    <div slot="demo">
+        <style is:global>
+            #anchored-label-range {
+                position: relative;
+                margin-block: 1rem 2.5rem;
+            }
+            :is(.prototype-ready, .prototype-partial) #anchored-label-range > .anchored-thumb-label {
+                position: absolute;
+                position-anchor: auto;
+                position-area: block-end;
+                margin-block-start: 0.45rem;
+                padding: 0.2rem 0.45rem;
+                border: 1px solid var(--border);
+                border-radius: 5px;
+                background: var(--surface);
+                color: var(--text-strong);
+                font-size: 0.75rem;
+                font-weight: 650;
+                white-space: nowrap;
+                cursor: pointer;
+            }
+            .prototype-fallback #anchored-label-range > .anchored-thumb-label {
+                position: static;
+                display: grid;
+                gap: 0.4rem;
+                color: var(--text-muted);
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+            .prototype-fallback #anchored-label-range > .anchored-thumb-label input,
+            .prototype-fallback #anchored-label-range > input[type="range"] {
+                width: 100%;
+            }
+        </style>
+        <rangegroup id="anchored-label-range" min="0" max="100">
+            <legend class="visually-hidden">Delivery window</legend>
+            <label class="anchored-thumb-label">
+                Earliest
+                <input type="range" name="delivery-start" min="0" max="100" value="25" />
+            </label>
+            <label class="anchored-thumb-label" for="delivery-end">Latest</label>
+            <input id="delivery-end" type="range" name="delivery-end" min="0" max="100" value="75" />
+        </rangegroup>
+    </div>
+    <ExampleCodeBlock slot="code">
+        <CodeSnippet
+            lang="html"
+            code={`
+<rangegroup id="delivery-window" min="0" max="100">
+  <legend>Delivery window</legend>
+
+  <!-- Implicit association by wrapping. -->
+  <label class="thumb-label">
+    Earliest
+    <input type="range" name="delivery-start"
+           min="0" max="100" value="25">
+  </label>
+
+  <!-- Explicit association remains activatable. -->
+  <label class="thumb-label" for="delivery-end">Latest</label>
+  <input id="delivery-end" type="range" name="delivery-end"
+         min="0" max="100" value="75">
+</rangegroup>
+`}
+        />
+        <CodeSnippet
+            lang="css"
+            code={`
+#delivery-window {
+  position: relative;
+}
+
+/* Chromium supplies the implicit thumb relationship only.
+   Authors opt into all visible placement. */
+#delivery-window > .thumb-label {
+  position: absolute;
+  position-anchor: auto;
+  position-area: block-end;
+  margin-block-start: .45rem;
+}
+
+/* A non-supporting browser keeps the real labels and inputs usable.
+   The showcase applies this override from its detected fallback state. */
+.prototype-fallback #delivery-window > .thumb-label {
+  position: static;
+}
+`}
+        />
+    </ExampleCodeBlock>
+</ExampleSection>

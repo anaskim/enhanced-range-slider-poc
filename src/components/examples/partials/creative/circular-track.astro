@@ -15,14 +15,15 @@ import CodeSnippet from "../../CodeSnippet.astro";
         A two-thumb circular range dial, built entirely with opt-in CSS. Thumbs orbit the ring via <code
             >offset-path</code
         >
-        + <code>offset-distance</code>, and the filled arc is a <code>conic-gradient</code> driven by the segment&rsquo;s
-        exposed geometry. A tiny opt-in script maps pointer movement to angle so dragging feels truly circular. The value
-        chips are purely presentational and intentionally omitted from the code sample.
+        + <code>offset-distance</code>, and the filled arc is a <code>conic-gradient</code> driven by author-owned mirrored
+        values. A tiny opt-in script maps pointer movement to angle so dragging feels truly circular. The value chips are
+        purely presentational and intentionally omitted from the code sample.
     </Fragment>
     <Fragment slot="disclosure">
         Fixed-origin, counterclockwise movement is an inferred demo policy, not settled rangegroup behavior. The
-        authored angle adapter moves only the second input and clamps rather than wrapping. Native path hit testing,
-        event dispatch, keyboard direction, accessibility orientation, and the shared 0%/100% seam remain unresolved.
+        authored angle adapter moves only the second input, clamps rather than wrapping, and updates all custom
+        properties used by the ring. Native path hit testing, event dispatch, keyboard direction, accessibility
+        orientation, and the shared 0%/100% seam remain unresolved.
     </Fragment>
     <div slot="demo" class="circular-card">
         <style is:global>
@@ -59,11 +60,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
             #circular-range::slider-segment(2) {
                 background: conic-gradient(
                     from 0deg,
-                    transparent 0
-                        calc(100% - var(--_blink-rangegroup-prototype-segment-size, var(--circular-segment-size, 75%))),
-                    var(--circ-accent)
-                        calc(100% - var(--_blink-rangegroup-prototype-segment-size, var(--circular-segment-size, 75%)))
-                        100%
+                    transparent 0 calc(100% - var(--circular-segment-size, 75%)),
+                    var(--circ-accent) calc(100% - var(--circular-segment-size, 75%)) 100%
                 );
                 mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring)), #000 0);
             }
@@ -74,7 +72,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 margin: 0;
                 padding: 0;
                 offset-path: path("M120,9 A111,111 0 0 0 120,231 A111,111 0 0 0 120,9");
-                offset-distance: var(--_blink-rangegroup-prototype-thumb-position, var(--circular-position));
+                offset-distance: var(--circular-position);
                 offset-anchor: center;
                 offset-rotate: 0deg;
                 border: 3px solid var(--circ-accent);
@@ -148,19 +146,9 @@ rangegroup::slider-segment(2) {
   background: conic-gradient(
     from 0deg,
     transparent 0
-      calc(
-        100% - var(
-          --_blink-rangegroup-prototype-segment-size,
-          var(--circular-segment-size, 75%)
-        )
-      ),
+      calc(100% - var(--circular-segment-size, 75%)),
     #0a84ff
-      calc(
-        100% - var(
-          --_blink-rangegroup-prototype-segment-size,
-          var(--circular-segment-size, 75%)
-        )
-      )
+      calc(100% - var(--circular-segment-size, 75%))
       100%
   );
   mask: radial-gradient(farthest-side, transparent calc(100% - 18px), #000 0);
@@ -169,8 +157,7 @@ rangegroup::slider-thumb(*) {
   inset: 0;
   margin: 0;
   offset-path: path("M120,9 A111,111 0 0 0 120,231 A111,111 0 0 0 120,9");
-  offset-distance:
-    var(--_blink-rangegroup-prototype-thumb-position, var(--circular-position));
+  offset-distance: var(--circular-position);
   offset-anchor: center;
   offset-rotate: 0deg;
   border: 3px solid #0a84ff;

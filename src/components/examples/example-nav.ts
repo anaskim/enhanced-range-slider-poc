@@ -16,6 +16,7 @@ export const exampleNav: ExampleNavGroup[] = [
             { id: "baseline", label: "Baseline (native default)", title: "Baseline (native default)" },
             { id: "single-thumb", label: "Single thumb (group of one)", title: "Single thumb (group of one)" },
             { id: "empty-group", label: "Empty group (no thumbs)", title: "Empty group — no thumbs" },
+            { id: "anchored-labels", label: "Authored anchored labels", title: "Authored anchored labels" },
             { id: "interactive-price", label: "Interactive price editor", title: "Interactive price editor" },
             { id: "datalist", label: "Datalist integration", title: "Datalist integration" },
             { id: "non-linear-scale", label: "Non-linear scale", title: "Non-linear scale via datalist" },

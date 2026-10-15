@@ -14,14 +14,13 @@ import CodeSnippet from "../../CodeSnippet.astro";
     <Fragment slot="description">
         The track is repainted as a wave and every thumb rides the curve &mdash; with <strong
             >no changes to the control&rsquo;s value or interaction model</strong
-        >. Each thumb exposes its position so an opt-in stylesheet can drive <code>offset-path</code> / <code
-            >offset-distance</code
-        >. Dragging and keyboard control are unchanged.
+        >. Author JavaScript mirrors each value into an author-owned custom property that drives <code>offset-path</code
+        > / <code>offset-distance</code>. Dragging and keyboard control are unchanged.
     </Fragment>
     <Fragment slot="disclosure">
         This tests forward visual geometry only. Pointer-to-value mapping remains the prototype's linear inline-axis
-        mapping, and the track's rectangular box remains its hit target. The temporary
-        <code>--_blink-rangegroup-prototype-thumb-position</code> variable is implementation evidence, not proposed API.
+        mapping, and the track's rectangular box remains its hit target. The mirrored positions belong entirely to this
+        example; the native control does not expose path geometry to the stylesheet.
     </Fragment>
     <div slot="demo" class="wavy-card">
         <style is:global>
@@ -54,7 +53,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 margin: 0;
                 padding: 0;
                 offset-path: path("M0,40 Q40,15 80,40 T160,40 T240,40 T320,40");
-                offset-distance: var(--_blink-rangegroup-prototype-thumb-position, var(--wavy-position));
+                offset-distance: var(--wavy-position);
                 offset-anchor: center;
                 offset-rotate: 0deg;
                 border: 3px solid white;
@@ -122,8 +121,7 @@ rangegroup::slider-thumb(*) {
   inset: 0;
   margin: 0;
   offset-path: path("M0,40 Q40,15 80,40 T160,40 T240,40 T320,40");
-  offset-distance:
-    var(--_blink-rangegroup-prototype-thumb-position, var(--wavy-position));
+  offset-distance: var(--wavy-position);
   offset-anchor: center;
   offset-rotate: 0deg;
 }
@@ -137,7 +135,7 @@ rangegroup::slider-thumb(3) {
   --wavy-position: var(--wavy-thumb-3-position, 80%);
 }
 
-/* Prototype-only output from Blink; the final CSS API is unresolved. */
+/* These positions are mirrored by the authored script below. */
 `}
         />
         <CodeSnippet
@@ -148,7 +146,6 @@ const readout = document.querySelector("#wavy-readout");
 
 const update = () => {
   group.values.forEach((value, index) => {
-    /* Fallback for browsers without the experimental Blink output. */
     group.style.setProperty(
       \`--wavy-thumb-\${index + 1}-position\`,
       \`\${value}%\`

@@ -12,13 +12,14 @@ import CodeSnippet from "../../CodeSnippet.astro";
     runtimeRequires={["core", "convenienceApi", "pseudos"]}
 >
     <Fragment slot="description">
-        Invisible handles plus CSS Anchor Positioning makes external tooltips read as the draggable thumbs. The visible
-        &ldquo;handle&rdquo; pills are just anchored DIVs.
+        Invisible handles plus CSS Anchor Positioning make ordinary DOM value pills read as the draggable thumbs. The
+        visible &ldquo;handles&rdquo; are authored <code>&lt;div&gt;</code> elements, not browser-provided UI.
     </Fragment>
     <Fragment slot="disclosure">
-        The prototype proves that authored elements can anchor to its indexed thumb proxies. The remaining gap is
-        standardizing and testing that cross-boundary anchoring contract, including dynamic thumbs, writing modes, and
-        fallback behavior; the pill text still requires authored JavaScript.
+        CSS Anchor Positioning places these authored elements and author JavaScript copies the values into them. The
+        remaining gap is standardizing and testing anchoring to indexed thumb proxies, including dynamic thumbs, writing
+        modes, and fallback behavior. The separate relationship-only experiment applies to real associated labels, not
+        these <code>&lt;div&gt;</code> pills, and does not provide automatic layout.
     </Fragment>
     <div slot="demo" style="position: relative">
         <style is:global>

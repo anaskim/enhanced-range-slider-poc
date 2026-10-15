@@ -19,12 +19,12 @@ function selectorParses(selector: string): boolean {
 }
 
 interface NativePrototypeSupport {
+    anchoredLabels: "separate-flag";
     core: boolean;
     convenienceApi: boolean;
     datalistKeyboard: "separate-flag";
     pseudos: boolean;
     segmentDragging: "separate-flag";
-    tooltips: "separate-flag";
 }
 
 function detectNativePrototype(): NativePrototypeSupport {
@@ -41,12 +41,12 @@ function detectNativePrototype(): NativePrototypeSupport {
         selectorParses("rangegroup::slider-thumb(*)");
 
     return {
+        anchoredLabels: "separate-flag",
         core,
         convenienceApi,
         datalistKeyboard: "separate-flag",
         pseudos,
         segmentDragging: "separate-flag",
-        tooltips: "separate-flag",
     };
 }
 
@@ -107,23 +107,23 @@ function initializePrototypeStatus(): NativePrototypeSupport {
     html.classList.toggle("prototype-partial", support.core && !ready);
     html.classList.toggle("prototype-fallback", !support.core);
     html.classList.toggle("prototype-pseudos", support.core && support.pseudos);
+    html.dataset.rangegroupAnchoredLabels = support.anchoredLabels;
     html.dataset.rangegroupCore = support.core ? "on" : "off";
     html.dataset.rangegroupApi = support.convenienceApi ? "on" : "off";
     html.dataset.rangegroupDatalistKeyboard = support.datalistKeyboard;
     html.dataset.rangegroupPseudos = support.pseudos ? "on" : "off";
     html.dataset.rangegroupSegmentDragging = support.segmentDragging;
-    html.dataset.rangegroupTooltips = support.tooltips;
 
     document.querySelectorAll<HTMLElement>("[data-runtime-status]").forEach((status) => {
         status.textContent = !support.core ? "Fallback mode" : ready ? "Prototype ready" : "Partial prototype";
         status.dataset.state = !support.core ? "fallback" : ready ? "ready" : "partial";
         status.title = [
-            `Core: ${support.core ? "on" : "off"}`,
-            `Convenience API: ${support.convenienceApi ? "on" : "off"}`,
-            `Slider pseudos: ${support.pseudos ? "on" : "off"}`,
-            "Datalist keyboard navigation: separate launch flag; not feature-detectable",
-            "Segment dragging: separate launch flag; not feature-detectable",
-            "Native tooltips: separate launch flag; not feature-detectable",
+            `RangeGroup: ${support.core ? "on" : "off"}`,
+            `RangeGroupAnchoredLabels: separate launch flag; not feature-detectable`,
+            `RangeGroupConvenienceAPI: ${support.convenienceApi ? "on" : "off"}`,
+            `RangeGroupDatalistKeyboardNavigation: separate launch flag; not feature-detectable`,
+            `RangeGroupSegmentDragging: separate launch flag; not feature-detectable`,
+            `SliderPseudoElements: ${support.pseudos ? "on" : "off"}`,
         ].join("\n");
     });
 

@@ -4,7 +4,12 @@ import ExampleCodeBlock from "../../ExampleCodeBlock.astro";
 import CodeSnippet from "../../CodeSnippet.astro";
 ---
 
-<ExampleSection id="empty-group" eyebrow="Foundations" title="Empty group — no thumbs">
+<ExampleSection
+    id="empty-group"
+    eyebrow="Foundations"
+    title="Empty group — no thumbs"
+    runtimeRequires={["core", "convenienceApi", "pseudos"]}
+>
     <Fragment slot="description">
         A <code>&lt;rangegroup&gt;</code> with no child range renders an empty track: visible, not hidden and not
         disabled, with nothing to drag. Open UI
@@ -13,9 +18,9 @@ import CodeSnippet from "../../CodeSnippet.astro";
         value. Adding inputs grows the same control from zero thumbs to one to many, which is what the buttons below do.
     </Fragment>
     <div slot="demo">
-        <range-group id="empty-group-range" min="0" max="100" stepbetween="5">
-            <legend slot="legend" class="visually-hidden">Stops</legend>
-        </range-group>
+        <rangegroup id="empty-group-range" min="0" max="100" stepbetween="5">
+            <legend class="visually-hidden">Stops</legend>
+        </rangegroup>
         <div class="button-group">
             <button id="empty-group-add" class="btn btn-primary" type="button">Add thumb</button>
             <button id="empty-group-remove" class="btn btn-secondary" type="button">Remove thumb</button>
@@ -76,8 +81,10 @@ console.log(rg.values); // [] — back to the empty track
 
                 // Drop each new thumb into the widest free stretch of the track.
                 const nextValue = () => {
-                    const points = [rg.min, ...rg.values, rg.max];
-                    let value = (rg.min + rg.max) / 2;
+                    const minimum = Number(rg.getAttribute("min"));
+                    const maximum = Number(rg.getAttribute("max"));
+                    const points = [minimum, ...rg.values, maximum];
+                    let value = (minimum + maximum) / 2;
                     let widest = -1;
                     for (let i = 0; i < points.length - 1; i++) {
                         const gap = points[i + 1] - points[i];
@@ -103,21 +110,10 @@ console.log(rg.values); // [] — back to the empty track
                 render();
             };
 
-            const run = () => {
-                if (typeof customElements?.whenDefined === "function") {
-                    customElements
-                        .whenDefined("range-group")
-                        .then(init)
-                        .catch(() => init());
-                    return;
-                }
-                init();
-            };
-
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", run, { once: true });
+                document.addEventListener("DOMContentLoaded", init, { once: true });
             } else {
-                run();
+                init();
             }
         })();
     </script>
