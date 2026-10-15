@@ -23,7 +23,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 position: relative;
                 margin-block: 1rem 2.5rem;
             }
-            :is(.prototype-ready, .prototype-partial) #anchored-label-range > .anchored-thumb-label {
+            html[data-rangegroup-anchored-labels="on"] #anchored-label-range > .anchored-thumb-label {
                 position: absolute;
                 position-anchor: auto;
                 position-area: block-end;

@@ -19,7 +19,7 @@ function selectorParses(selector: string): boolean {
 }
 
 interface NativePrototypeSupport {
-    anchoredLabels: "separate-flag";
+    anchoredLabels: boolean;
     core: boolean;
     convenienceApi: boolean;
     datalistKeyboard: "separate-flag";
@@ -30,6 +30,8 @@ interface NativePrototypeSupport {
 function detectNativePrototype(): NativePrototypeSupport {
     const group = document.createElement("rangegroup");
     const core = typeof window.HTMLRangeGroupElement === "function" && group instanceof window.HTMLRangeGroupElement;
+    const anchoredLabels =
+        core && new URLSearchParams(window.location.search).get("rangegroup-anchored-labels") === "on";
     const convenienceApi =
         core &&
         ["values", "inputs", "getRangeInput", "setRangeValue", "addThumb", "removeThumb"].every(
@@ -41,7 +43,7 @@ function detectNativePrototype(): NativePrototypeSupport {
         selectorParses("rangegroup::slider-thumb(*)");
 
     return {
-        anchoredLabels: "separate-flag",
+        anchoredLabels,
         core,
         convenienceApi,
         datalistKeyboard: "separate-flag",
@@ -107,7 +109,7 @@ function initializePrototypeStatus(): NativePrototypeSupport {
     html.classList.toggle("prototype-partial", support.core && !ready);
     html.classList.toggle("prototype-fallback", !support.core);
     html.classList.toggle("prototype-pseudos", support.core && support.pseudos);
-    html.dataset.rangegroupAnchoredLabels = support.anchoredLabels;
+    html.dataset.rangegroupAnchoredLabels = support.anchoredLabels ? "on" : "off";
     html.dataset.rangegroupCore = support.core ? "on" : "off";
     html.dataset.rangegroupApi = support.convenienceApi ? "on" : "off";
     html.dataset.rangegroupDatalistKeyboard = support.datalistKeyboard;
@@ -119,7 +121,7 @@ function initializePrototypeStatus(): NativePrototypeSupport {
         status.dataset.state = !support.core ? "fallback" : ready ? "ready" : "partial";
         status.title = [
             `RangeGroup: ${support.core ? "on" : "off"}`,
-            `RangeGroupAnchoredLabels: separate launch flag; not feature-detectable`,
+            `RangeGroupAnchoredLabels: ${support.anchoredLabels ? "on (launch hint)" : "off or not declared"}`,
             `RangeGroupConvenienceAPI: ${support.convenienceApi ? "on" : "off"}`,
             `RangeGroupDatalistKeyboardNavigation: separate launch flag; not feature-detectable`,
             `RangeGroupSegmentDragging: separate launch flag; not feature-detectable`,

@@ -44,7 +44,7 @@ Launch the relationship-only anchored-label experiment with:
 ```powershell
 Q:\cr\src\out\release_x64\chrome.exe `
   --enable-blink-features=RangeGroup,RangeGroupAnchoredLabels `
-  http://localhost:4321/enhanced-range-slider-poc/
+  "http://localhost:4321/enhanced-range-slider-poc/?rangegroup-anchored-labels=on"
 ```
 
 This mode only supplies an implicit relationship between each associated label
