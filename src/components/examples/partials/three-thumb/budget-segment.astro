@@ -136,7 +136,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
             }
         </style>
         <div class="budget-range-wrapper">
-            <rangegroup id="budget-segment-range" min="0" max="100">
+            <rangegroup id="budget-segment-range" interaction="range" min="0" max="100">
                 <legend class="visually-hidden">Budget allocator endpoints</legend>
                 <label class="visually-hidden">
                     Groceries/Rent separator
@@ -164,7 +164,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup id="budget-segment-range" min="0" max="100">
+<rangegroup id="budget-segment-range" interaction="range" min="0" max="100">
   <legend>Budget allocator endpoints</legend>
   <label>Groceries / Rent     <input type="range" value="25"></label>
   <label>Rent / Transport     <input type="range" value="50"></label>

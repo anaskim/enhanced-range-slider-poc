@@ -104,7 +104,14 @@ import CodeSnippet from "../../CodeSnippet.astro";
             <svg class="hours-icon hours-icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M20.5 14.5A9 9 0 0 1 9.5 3.5a.5.5 0 0 0-.65-.65 9 9 0 1 0 12.3 12.3.5.5 0 0 0-.65-.65z"></path>
             </svg>
-            <rangegroup id="opening-hours-segment-range" min="480" max="1320" list="hours-ticks" stepbetween="30">
+            <rangegroup
+                id="opening-hours-segment-range"
+                interaction="range"
+                min="480"
+                max="1320"
+                list="hours-ticks"
+                stepbetween="30"
+            >
                 <legend class="visually-hidden">Opening hours endpoints</legend>
                 <label class="visually-hidden">
                     AM Open <input type="range" min="480" max="1320" value="540" />
@@ -159,7 +166,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup id="opening-hours-segment-range" min="480" max="1320" list="hours-ticks"
+<rangegroup id="opening-hours-segment-range" interaction="range"
+            min="480" max="1320" list="hours-ticks"
             stepbetween="30">
   <legend>Opening hours endpoints</legend>
   <label>AM Open <input type="range" min="480" max="1320" value="540"></label>

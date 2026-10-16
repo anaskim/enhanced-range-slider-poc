@@ -149,7 +149,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 preserveAspectRatio="none"
                 aria-hidden="true"></svg>
             <div class="video-timeline-playhead" id="video-timeline-playhead" hidden></div>
-            <rangegroup id="video-timeline-range" min="0" max="180" stepbetween="1">
+            <rangegroup id="video-timeline-range" interaction="range" min="0" max="180" stepbetween="1">
                 <legend class="visually-hidden">Clip in and out</legend>
                 <label class="visually-hidden">
                     In
@@ -167,7 +167,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup min="0" max="180" stepbetween="1">
+<rangegroup interaction="range" min="0" max="180" stepbetween="1">
   <legend>Clip in and out</legend>
   <label>In  <input type="range" name="video-in" min="0" max="180" value="24"></label>
   <label>Out <input type="range" name="video-out" min="0" max="180" value="84"></label>

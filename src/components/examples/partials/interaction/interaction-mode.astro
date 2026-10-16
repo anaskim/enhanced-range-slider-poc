@@ -40,7 +40,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
                 cursor: grab;
             }
         </style>
-        <rangegroup id="interaction-mode-range" min="0" max="120">
+        <rangegroup id="interaction-mode-range" interaction="range" min="0" max="120">
             <legend class="visually-hidden">Clip in and out points</legend>
             <label class="visually-hidden">
                 In
@@ -57,7 +57,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="html"
             code={`
-<rangegroup min="0" max="120">
+<rangegroup interaction="range" min="0" max="120">
   <legend>Clip in and out points</legend>
   <label>In <input type="range" name="clip-in" min="0" max="120" value="24"></label>
   <label>Out <input type="range" name="clip-out" min="0" max="120" value="84"></label>
