@@ -19,7 +19,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #empty-group-range::slider-segment(1) {
+            #empty-group-range:not(:has(input[type="range"]))::slider-segment(1) {
                 background: #d8d8de;
             }
         </style>
@@ -44,8 +44,10 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <CodeSnippet
             lang="css"
             code={`
-/* The bare track is a single segment, so it is addressable even with no thumbs. */
-rangegroup::slider-segment(1) { background: #d8d8de; }
+/* The bare track is a single segment. Added thumbs return to UA defaults. */
+rangegroup:not(:has(input[type="range"]))::slider-segment(1) {
+  background: #d8d8de;
+}
 `}
         />
         <CodeSnippet

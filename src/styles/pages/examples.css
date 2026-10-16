@@ -109,6 +109,7 @@ rangegroup {
         :where(
             #baseline-range,
             #single-thumb-range,
+            #empty-group-range,
             #anchored-label-range,
             #interactive-price-range,
             #rating-range,
@@ -140,6 +141,7 @@ rangegroup {
         :where(
             #baseline-range,
             #single-thumb-range,
+            #empty-group-range,
             #anchored-label-range,
             #interactive-price-range,
             #rating-range,
@@ -172,6 +174,7 @@ rangegroup {
         :where(
             #baseline-range,
             #single-thumb-range,
+            #empty-group-range,
             #anchored-label-range,
             #interactive-price-range,
             #rating-range,
@@ -212,6 +215,7 @@ rangegroup {
         :where(
             #baseline-range,
             #single-thumb-range,
+            #empty-group-range,
             #anchored-label-range,
             #interactive-price-range,
             #rating-range,
