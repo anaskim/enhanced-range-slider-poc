@@ -17,12 +17,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
             >interaction="range"</code
         > is a working name pending bikeshed on <a href="https://github.com/openui/open-ui/issues/1460">#1460</a>.
     </Fragment>
-    <Fragment slot="disclosure">
-        The separate <code>RangeGroupSegmentDragging</code> runtime flag enables the working pointer behavior. A video timeline
-        combines interactions that may compete for the same surface: trimming an endpoint, moving the selected clip, and seeking
-        or scrubbing the playhead. The platform design must define which regions initiate each action, whether whole-clip
-        movement is opt-in, and how keyboard and accessibility users move the interval as one object.
-    </Fragment>
     <div slot="demo" class="video-timeline-card">
         <style is:global>
             .video-timeline-card {

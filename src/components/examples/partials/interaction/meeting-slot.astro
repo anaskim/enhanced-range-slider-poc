@@ -17,13 +17,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <code>interaction="range"</code> is a working name pending bikeshed on
         <a href="https://github.com/openui/open-ui/issues/1460">#1460</a>.
     </Fragment>
-    <Fragment slot="disclosure">
-        The separate <code>RangeGroupSegmentDragging</code> runtime flag enables the working pointer behavior. Scheduling
-        adds a product-specific question beyond generic segment dragging: should movement stop at unavailable times, skip
-        across them, or remain valid while the application reports a conflict? This prototype keeps availability and conflict
-        policy author-owned. A public interval interaction still needs an explicit hit area plus keyboard and accessibility
-        equivalents.
-    </Fragment>
     <div slot="demo" class="meeting-slot-card">
         <style is:global>
             .meeting-slot-card {

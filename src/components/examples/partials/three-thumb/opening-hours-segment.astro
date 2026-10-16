@@ -19,12 +19,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
         pointer rather than jumping a thumb, and a dragged shift is clamped by its neighbours and by
         <code>stepbetween</code>.
     </Fragment>
-    <Fragment slot="disclosure">
-        The separate <code>RangeGroupSegmentDragging</code> runtime flag makes all three interior segments draggable: the
-        two open shifts and the closed gap between them. This design intends only the teal shifts to move. A public design
-        must let authors identify movable intervals without inferring semantics from color, and must define keyboard, accessibility,
-        focus, and event behavior for the selected pair.
-    </Fragment>
     <div slot="demo" class="hours-card">
         <style is:global>
             /* Base layout, pill and readout styles are shared with the opening hours example above. */

@@ -11,8 +11,9 @@ import CodeSnippet from "../../CodeSnippet.astro";
     runtimeRequires={["core", "convenienceApi"]}
 >
     <Fragment slot="description">
-        A two-thumb 1&ndash;5 star rating filter. The five stars below the track act as labels for discrete snap
-        positions &mdash; stars inside the selected range fill in gold, the rest stay hollow.
+        A two-thumb 1&ndash;5 star rating filter. The five stars below the track act as labels and snap targets via <code
+            >list</code
+        > &mdash; stars inside the selected range fill in gold, the rest stay hollow.
     </Fragment>
     <div slot="demo" class="star-rating-card">
         <style is:global>

@@ -27,12 +27,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
         <a href="https://www.w3.org/2026/09/10-openui-minutes.html">resolved</a>. It works with any thumb count &mdash;
         with three or more, the pointer picks which segment moves (see the segment-drag examples further down).
     </Fragment>
-    <Fragment slot="disclosure">
-        Chromium exposes this experiment behind the separate <code>RangeGroupSegmentDragging</code> runtime flag. The design
-        question is whether segment dragging should be native at all and, if so, whether it is the default or an author opt-in
-        such as the working <code>interaction="range"</code> syntax. A public design also needs keyboard and accessibility
-        equivalents, hit-testing rules, and deterministic behavior when constraints leave no common movement.
-    </Fragment>
     <div slot="demo">
         <style is:global>
             #interaction-mode-range::slider-segment(2) {

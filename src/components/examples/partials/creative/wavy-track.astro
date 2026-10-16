@@ -17,11 +17,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
         >. Author JavaScript mirrors each value into an author-owned custom property that drives <code>offset-path</code
         > / <code>offset-distance</code>. Dragging and keyboard control are unchanged.
     </Fragment>
-    <Fragment slot="disclosure">
-        This tests forward visual geometry only. Pointer-to-value mapping remains the prototype's linear inline-axis
-        mapping, and the track's rectangular box remains its hit target. The mirrored positions belong entirely to this
-        example; the native control does not expose path geometry to the stylesheet.
-    </Fragment>
     <div slot="demo" class="wavy-card">
         <style is:global>
             .wavy-card {

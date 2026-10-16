@@ -19,12 +19,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
         values. A tiny opt-in script maps pointer movement to angle so dragging feels truly circular. The value chips are
         purely presentational and intentionally omitted from the code sample.
     </Fragment>
-    <Fragment slot="disclosure">
-        Fixed-origin, counterclockwise movement is an inferred demo policy, not settled rangegroup behavior. The
-        authored angle adapter moves only the second input, clamps rather than wrapping, and updates all custom
-        properties used by the ring. Native path hit testing, event dispatch, keyboard direction, accessibility
-        orientation, and the shared 0%/100% seam remain unresolved.
-    </Fragment>
     <div slot="demo" class="circular-card">
         <style is:global>
             .circular-card {

@@ -18,11 +18,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
         a single thumb, so they are not draggable themselves; pressing there moves the closest interior bar to the
         pointer.
     </Fragment>
-    <Fragment slot="disclosure">
-        The separate <code>RangeGroupSegmentDragging</code> runtime flag enables this working pointer behavior. Moving one
-        category necessarily reallocates the shares on either side. A public design still needs an explicit way to choose
-        movable segments and equivalent keyboard and accessibility operations.
-    </Fragment>
     <div slot="demo" style="position: relative">
         <style is:global>
             #budget-segment-range {

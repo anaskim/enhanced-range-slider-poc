@@ -9,12 +9,6 @@ import CodeSnippet from "../../CodeSnippet.astro";
         Individual ticks and tick labels can be styled via the proposed slider pseudos. The 50% tick is highlighted with
         a different colour and height.
     </Fragment>
-    <Fragment slot="disclosure">
-        The explainer proposes <code>::slider-tick(*)</code> and <code>::slider-tick-label</code>. This prototype
-        deferred their public styling API while it investigates stable group-wide ticks versus active-thumb filtering,
-        option-label rendering, indexing, CSSOM, and dynamic updates. Native tick generation and snapping are already
-        implemented.
-    </Fragment>
     <div slot="demo">
         <style is:global>
             .custom-tick-output {

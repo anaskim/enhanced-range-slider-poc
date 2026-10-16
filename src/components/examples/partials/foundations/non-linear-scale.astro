@@ -43,11 +43,6 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
         stop is placed: by its value, or by its position in the list. Audio is the honest test case, because no one has
         ever shipped a linear frequency control.
     </Fragment>
-    <Fragment slot="disclosure">
-        <code>RangeGroupDatalistKeyboardNavigation</code> separately gates arrow-key traversal through the datalist values.
-        It does not change visual geometry or pointer mapping, which remain linear value space. The evenly spaced row therefore
-        stores authored list indexes rather than the real frequency; true non-linear value mapping remains outside v1.
-    </Fragment>
     <div slot="demo" class="scale-card">
         <style is:global>
             .scale-card {
