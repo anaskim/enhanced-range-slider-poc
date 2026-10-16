@@ -18,6 +18,11 @@ import CodeSnippet from "../../CodeSnippet.astro";
         Adding inputs grows the same control from zero thumbs to one to many, which is what the buttons below do.
     </Fragment>
     <div slot="demo">
+        <style is:global>
+            #empty-group-range::slider-segment(1) {
+                background: #d8d8de;
+            }
+        </style>
         <rangegroup id="empty-group-range" min="0" max="100" stepbetween="5">
             <legend class="visually-hidden">Stops</legend>
         </rangegroup>
