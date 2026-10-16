@@ -108,7 +108,16 @@ console.log(rg.values); // [] — back to the empty track
                 };
 
                 addBtn.addEventListener("click", () => {
-                    rg.addThumb(nextValue(), { label: `Stop ${rg.values.length + 1}` });
+                    const value = nextValue();
+                    const input = rg.addThumb(value, { label: `Stop ${rg.values.length + 1}` });
+                    const participants = () => Array.from(rg.querySelectorAll(':scope > input[type="range"]'));
+                    const before = participants().find(
+                        (candidate) => candidate !== input && Number(candidate.value) > value,
+                    );
+                    if (before) {
+                        rg.insertBefore(input, before);
+                    }
+                    rg.setRangeValue(participants().indexOf(input), value);
                     render();
                 });
 
