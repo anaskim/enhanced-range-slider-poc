@@ -88,6 +88,7 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
             }
             .scale-row rangegroup {
                 --slider-thumb-color: var(--color-purple);
+                color: var(--text-soft);
             }
             #scale-datalist-range::slider-segment(2),
             #scale-mapped-range::slider-segment(2) {
@@ -98,9 +99,44 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
                 background-color: var(--color-purple);
                 border-color: color-mix(in oklab, var(--color-purple) 70%, black 25%);
             }
+            .scale-tick-labels {
+                position: relative;
+                block-size: 1.4rem;
+                margin-block-start: 0.15rem;
+                color: var(--text-muted);
+                font-size: 0.7rem;
+                line-height: 1;
+                pointer-events: none;
+            }
+            .scale-tick-label {
+                position: absolute;
+                inset-inline-start: var(--tick-position);
+                translate: -50% 0;
+                white-space: nowrap;
+            }
+            .scale-tick-label::before {
+                display: block;
+                inline-size: 1px;
+                block-size: 4px;
+                margin: 0 auto 0.25rem;
+                background: var(--text-soft);
+                content: "";
+            }
+            .scale-tick-label:first-child {
+                translate: 0 0;
+            }
+            .scale-tick-label:last-child {
+                translate: -100% 0;
+            }
+            .scale-tick-label-hidden .scale-tick-text {
+                opacity: 0;
+            }
             @media (max-width: 700px) {
                 .scale-spectrum {
                     height: 48px;
+                }
+                .scale-tick-labels {
+                    font-size: 0.62rem;
                 }
             }
         </style>
@@ -139,6 +175,18 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
             <datalist id="scale-stops">
                 {bands.map((band) => <option value={band.hz} label={band.label} />)}
             </datalist>
+            <div class="scale-tick-labels" aria-hidden="true">
+                {
+                    bands.map((band, i) => (
+                        <span
+                            class={`scale-tick-label ${i > 0 && i < 6 ? "scale-tick-label-hidden" : ""}`}
+                            style={`--tick-position: ${byValue(band.hz)}%`}
+                        >
+                            <span class="scale-tick-text">{band.label}</span>
+                        </span>
+                    ))
+                }
+            </div>
             <output id="scale-datalist-output" class="api-output"></output>
         </div>
 
@@ -176,6 +224,15 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
             <datalist id="scale-octaves">
                 {bands.map((band, i) => <option value={i} label={band.label} />)}
             </datalist>
+            <div class="scale-tick-labels" aria-hidden="true">
+                {
+                    bands.map((band, i) => (
+                        <span class="scale-tick-label" style={`--tick-position: ${byIndex(i)}%`}>
+                            <span class="scale-tick-text">{band.label}</span>
+                        </span>
+                    ))
+                }
+            </div>
             <output id="scale-mapped-output" class="api-output"></output>
         </div>
     </div>
