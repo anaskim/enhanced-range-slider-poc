@@ -19,11 +19,11 @@ import CodeSnippet from "../../CodeSnippet.astro";
     </Fragment>
     <div slot="demo">
         <style is:global>
-            #empty-group-range:not(:has(input[type="range"]))::slider-segment(1) {
+            #empty-group-range.is-empty::slider-segment(1) {
                 background: #d8d8de;
             }
         </style>
-        <rangegroup id="empty-group-range" min="0" max="100" stepbetween="5">
+        <rangegroup id="empty-group-range" class="is-empty" min="0" max="100" stepbetween="5">
             <legend class="visually-hidden">Stops</legend>
         </rangegroup>
         <div class="button-group">
@@ -45,7 +45,7 @@ import CodeSnippet from "../../CodeSnippet.astro";
             lang="css"
             code={`
 /* The bare track is a single segment. Added thumbs return to UA defaults. */
-rangegroup:not(:has(input[type="range"]))::slider-segment(1) {
+rangegroup.is-empty::slider-segment(1) {
   background: #d8d8de;
 }
 `}
@@ -76,6 +76,7 @@ console.log(rg.values); // [] — back to the empty track
 
                 const render = () => {
                     const count = rg.values.length;
+                    rg.classList.toggle("is-empty", count === 0);
                     output.value =
                         count === 0
                             ? "0 thumbs — empty track, nothing to drag"
@@ -90,6 +91,9 @@ console.log(rg.values); // [] — back to the empty track
                 const nextValue = () => {
                     const minimum = Number(rg.getAttribute("min"));
                     const maximum = Number(rg.getAttribute("max"));
+                    if (rg.values.length === 0) {
+                        return (minimum + maximum) / 2;
+                    }
                     const points = [minimum, ...rg.values, maximum];
                     let value = (minimum + maximum) / 2;
                     let widest = -1;
