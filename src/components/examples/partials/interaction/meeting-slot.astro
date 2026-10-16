@@ -12,9 +12,8 @@ import CodeSnippet from "../../CodeSnippet.astro";
     runtimeRequires={["core", "convenienceApi"]}
 >
     <Fragment slot="description">
-        A one-hour meeting on a workday calendar. Drag the block to a free slot without changing
-        its length, or press anywhere on the day to send it there; the handles still resize. Busy
-        times are shown behind the track.
+        A one-hour meeting on a workday calendar. Drag the block to a free slot without changing its length, or press
+        anywhere on the day to send it there; the handles still resize. Busy times are shown behind the track.
         <code>interaction="range"</code> is a working name pending bikeshed on
         <a href="https://github.com/openui/open-ui/issues/1460">#1460</a>.
     </Fragment>
@@ -130,18 +129,10 @@ import CodeSnippet from "../../CodeSnippet.astro";
             }
         </style>
         <div class="meeting-slot-stage">
-            <div
-                class="meeting-slot-busy meeting-slot-busy-standup"
-                role="img"
-                aria-label="Standup, 9:00–9:30 AM"
-            >
+            <div class="meeting-slot-busy meeting-slot-busy-standup" role="img" aria-label="Standup, 9:00–9:30 AM">
                 Standup
             </div>
-            <div
-                class="meeting-slot-busy meeting-slot-busy-review"
-                role="img"
-                aria-label="Design review, 1:00–2:00 PM"
-            >
+            <div class="meeting-slot-busy meeting-slot-busy-review" role="img" aria-label="Design review, 1:00–2:00 PM">
                 Design review
             </div>
             <rangegroup id="meeting-slot-range" min="480" max="1080" list="meeting-ticks" stepbetween="30">

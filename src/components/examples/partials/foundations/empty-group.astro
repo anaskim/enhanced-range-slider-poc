@@ -11,11 +11,11 @@ import CodeSnippet from "../../CodeSnippet.astro";
     runtimeRequires={["core", "convenienceApi", "pseudos"]}
 >
     <Fragment slot="description">
-        A <code>&lt;rangegroup&gt;</code> with no child range renders an empty track: visible, not hidden and not
-        disabled, with nothing to drag. Open UI
-        <a href="https://github.com/openui/open-ui/issues/1515">resolved</a> against having an empty group imply a
-        default thumb, because that thumb would have no backing <code>&lt;input&gt;</code>, no IDL, and no submitted
-        value. Adding inputs grows the same control from zero thumbs to one to many, which is what the buttons below do.
+        A <code>&lt;rangegroup&gt;</code> with no child range renders an empty track: visible, not hidden and not disabled,
+        with nothing to drag. Open UI
+        <a href="https://github.com/openui/open-ui/issues/1515">resolved</a> against having an empty group imply a default
+        thumb, because that thumb would have no backing <code>&lt;input&gt;</code>, no IDL, and no submitted value.
+        Adding inputs grows the same control from zero thumbs to one to many, which is what the buttons below do.
     </Fragment>
     <div slot="demo">
         <rangegroup id="empty-group-range" min="0" max="100" stepbetween="5">

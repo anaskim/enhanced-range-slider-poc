@@ -36,18 +36,17 @@ const byIndex = (i: number) => (i / (bands.length - 1)) * 100;
     runtimeRequires={["core", "convenienceApi", "pseudos"]}
 >
     <Fragment slot="description">
-        Open UI <a href="https://github.com/openui/open-ui/issues/1464">resolved</a> to first prototype non-linear
-        scales with nothing more than a <code>&lt;datalist&gt;</code>, which is what a range input can already express,
-        and to document where that runs out. Both controls below are the same filter band, 125&nbsp;Hz&ndash;4&nbsp;kHz
-        over the same ten octaves, with the same octave-band spectrum drawn behind the track. The only difference is
-        where a stop is placed: by its value, or by its position in the list. Audio is the honest test case, because no
-        one has ever shipped a linear frequency control.
+        Open UI <a href="https://github.com/openui/open-ui/issues/1464">resolved</a> to first prototype non-linear scales
+        with nothing more than a <code>&lt;datalist&gt;</code>, which is what a range input can already express, and to
+        document where that runs out. Both controls below are the same filter band, 125&nbsp;Hz&ndash;4&nbsp;kHz over
+        the same ten octaves, with the same octave-band spectrum drawn behind the track. The only difference is where a
+        stop is placed: by its value, or by its position in the list. Audio is the honest test case, because no one has
+        ever shipped a linear frequency control.
     </Fragment>
     <Fragment slot="disclosure">
-        <code>RangeGroupDatalistKeyboardNavigation</code> separately gates arrow-key traversal through the datalist
-        values. It does not change visual geometry or pointer mapping, which remain linear value space. The evenly
-        spaced row therefore stores authored list indexes rather than the real frequency; true non-linear value mapping
-        remains outside v1.
+        <code>RangeGroupDatalistKeyboardNavigation</code> separately gates arrow-key traversal through the datalist values.
+        It does not change visual geometry or pointer mapping, which remain linear value space. The evenly spaced row therefore
+        stores authored list indexes rather than the real frequency; true non-linear value mapping remains outside v1.
     </Fragment>
     <div slot="demo" class="scale-card">
         <style is:global>
